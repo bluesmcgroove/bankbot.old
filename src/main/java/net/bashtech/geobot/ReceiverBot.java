@@ -1604,9 +1604,63 @@ public class ReceiverBot extends PircBot {
 		
 		// !balance - All
 		/*
-		 if (msg[0].equalsIgnoreCase(prefix + "balance")) {
+		if ((msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]
+				.equalsIgnoreCase(prefix + "bal")))) {
 			log("RB: Matched command !balance");
-			send(channel, BotManager.getInstance().bothelpMessage);
+			if (msg.length < 3) {
+				send(channel,
+						"Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
+			} else if (msg.length > 2) {
+				if (msg[1].equalsIgnoreCase("set") && msg.length > 3 && isOp) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					String value = fuseArray(msg, 3);
+
+					channelInfo.setBalance(key, value, sender);
+
+					send(channel, "Balance updated.");
+
+				} else if (msg[1].equalsIgnoreCase("clear")
+						|| msg[1].equalsIgnoreCase("remove")) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					boolean removed = channelInfo.removeCommand(key);
+
+					channelInfo.removeRepeatCommand(key);
+					channelInfo.removeScheduledCommand(key);
+					if (removed) {
+						send(channel, "Command " + key + " removed.");
+					} else
+						send(channel, "Command " + key + " doesn't exist.");
+
+				} else if (msg[1].equalsIgnoreCase("update")
+						&& msg.length >= 4) {
+					String command = msg[2].toLowerCase();
+					String levelStr = msg[3].toLowerCase();
+					int level = 0;
+					if (channelInfo.getBalance(command) != null) {
+						if (levelStr.equalsIgnoreCase("owner")
+								|| levelStr.equalsIgnoreCase("owners"))
+							level = 3;
+						if (levelStr.equalsIgnoreCase("mod")
+								|| levelStr.equalsIgnoreCase("mods"))
+							level = 2;
+						if (levelStr.equalsIgnoreCase("regular")
+								|| levelStr.equalsIgnoreCase("regulars"))
+							level = 1;
+						if (levelStr.equalsIgnoreCase("everyone"))
+							level = 0;
+
+						if (channelInfo.setCommandsRestriction(command, level))
+							send(channel, prefix + command + " restricted to "
+									+ levelStr + " only.");
+						else
+							send(channel, "Error setting restriction.");
+					} else {
+						send(channel, "Command does not exist.");
+					}
+				}
+			}
 			return;
 		}
 		*/
