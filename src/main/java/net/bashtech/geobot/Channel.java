@@ -128,6 +128,8 @@ public class Channel {
 	private boolean streamAlive = false;
 	private boolean urbanEnabled = false;
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
+	//Figure out how to add balance string
+	//private HashMap<String, String> userBalance = new HashMap<String, String>();
 
 	public Channel(String name) {
 		channel = name;
@@ -578,6 +580,62 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	
+	// Save balances to JSON
+	/*
+	
+	public String getBalance(String key) {
+		key = key.toLowerCase();
+
+		if (commands.containsKey(key)) {
+			return commands.get(key);
+		} else {
+			return null;
+		}
+	}
+
+	public void setCommand(String key, String command, String adder) {
+		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+		System.out.println("Key: " + key);
+		command = command.replaceAll(",,", "");
+
+		if (key.length() < 1)
+			return;
+
+		if (commands.containsKey(key)) {
+
+			commands.remove(key);
+			commandAdders.remove(key);
+			commands.put(key, command);
+			commandAdders.put(key, adder);
+
+		} else {
+			commands.put(key, command);
+			commandAdders.put(key, adder);
+			commandCounts.put(key, 0);
+		}
+
+		saveCommands(true);
+
+	}
+	
+	private void saveUserBalance() {
+		JSONArray userBalance = new JSONArray();
+		Iterator itr = userBalance.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject repeatObj = new JSONObject();
+			repeatObj.put("active", ((RepeatCommand) pairs.getValue()).active);
+			repeatedCommands.add(repeatObj);
+
+		}
+
+		config.put("userBalance", userBalance);
+		saveConfig(true);
+	}
+	*/
+	
 	public void setScheduledCommand(String key, String pattern, int diff) {
 		if (commandsSchedule.containsKey(key)) {
 			commandsSchedule.get(key).s.stop();
@@ -634,7 +692,7 @@ public class Channel {
 		config.put("scheduledCommands", scheduledCommands);
 		saveConfig(true);
 	}
-
+	
 	public ArrayList<String> getCommandList() {
 
 		ArrayList<String> sorted = new ArrayList<String>(commands.keySet());
@@ -725,6 +783,7 @@ public class Channel {
 		config.put("autoReplies", autoReplies);
 		saveConfig(true);
 	}
+
 
 	// #####################################################
 
@@ -1614,6 +1673,9 @@ public class Channel {
 		defaults.put("quotes", new JSONArray());
 
 		defaults.put("raidWhitelist", new JSONArray());
+		
+		// User Balance JSONArray
+		defaults.put("balanceArray", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1739,7 +1801,7 @@ public class Channel {
 				raidWhitelist.add((String) raidWhitelistArray.get(i));
 			}
 		}
-
+		//TODO learn how to create array from command array? Line 1904
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
 		for (int i = 0; i < commandsArray.size(); i++) {
@@ -1876,6 +1938,36 @@ public class Channel {
 
 				}
 			}
+		
+			// TODO Create JSONArray for user balances. Learn from Line 1766?
+			/*
+			JSONArray userBalance = (JSONArray) config.get("userBalance");
+
+			for (int i = 0; i < balanceArray.size(); i++) {
+				JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+				commands.put((String) commandObject.get("key"),
+						(String) commandObject.get("value"));
+				if (commandObject.containsKey("restriction")) {
+					commandsRestrictions.put((String) commandObject.get("key"),
+							((Long) commandObject.get("restriction")).intValue());
+				}
+				if (commandObject.containsKey("count")
+						&& commandObject.get("count") != null) {
+					commandCounts.put((String) commandObject.get("key"),
+							((Long) commandObject.get("count")).intValue());
+				} else {
+					commandCounts.put((String) commandObject.get("key"), 0);
+				}
+				if (commandObject.containsKey("editor")
+						&& commandObject.get("editor") != null) {
+					commandAdders.put((String) commandObject.get("key"),
+							(String) commandObject.get("editor"));
+				} else {
+					commandAdders.put((String) commandObject.get("key"), null);
+				}
+
+			}
+			*/
 
 		}
 		saveConfig(true);
