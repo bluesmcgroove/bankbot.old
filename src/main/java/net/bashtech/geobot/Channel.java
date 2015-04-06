@@ -88,7 +88,7 @@ public class Channel {
 	String clickToTweetFormat;
 	private boolean filterColors;
 	private boolean filterMe;
-	public long defaultBalance;
+	public long defaultBalance = 0L;
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
 	Map<String, EnumMap<FilterType, Integer>> warningCount;
@@ -452,6 +452,17 @@ public class Channel {
 			return false;
 
 	}
+	
+	public boolean removeBalance(String key, Long balance){
+		if(userBalances.containsKey(key)){
+			userBalances.replace(key, getBalance(key, balance), defaultBalance);
+			
+			saveBalance(true);
+			return true;
+		}
+		return false;
+	}
+	
 
 	public void saveCommands(Boolean shouldSendUpdate) {
 		JSONArray commandsArr = new JSONArray();
@@ -635,24 +646,25 @@ public class Channel {
 	//end reference
 	
 	//increase balance
+	
 	public void increaseBalance(String key, Long incBal) {
 		key = key.toLowerCase();
 		if (userBalances.containsKey(key)) {
-			int currentBalance = commandCounts.get(key);
-			currentBalance++;
-			commandCounts.put(key, currentBalance);
+			Long currentBalance = userBalances.get(key);
+			long summedBalance = Math.addExact(currentBalance, incBal);
+			userBalances.put(key, summedBalance);
 		}
 		saveCommands(false);
 
 	}
 	
 	//decrease balance
-	public void decreaseBalance(String commandName) {
-		commandName = commandName.toLowerCase();
-		if (commandCounts.containsKey(commandName)) {
-			int currentCount = commandCounts.get(commandName);
-			currentCount++;
-			commandCounts.put(commandName, currentCount);
+	public void decreaseBalance(String key, Long decBal) {
+		key = key.toLowerCase();
+		if (userBalances.containsKey(key)) {
+			long currentBalance = userBalances.get(key);
+			long subtrBalance = Math.subtractExact(currentBalance, decBal);
+			userBalances.put(key, subtrBalance);
 		}
 		saveCommands(false);
 

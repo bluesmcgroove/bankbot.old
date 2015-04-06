@@ -1401,6 +1401,7 @@ public class ReceiverBot extends PircBot {
 			return;
 		}
 
+		// !strawpoll
 		if ((msg[0].equalsIgnoreCase(prefix + "strawpoll") && isOp && msg.length > 1)) {
 			if (msg.length > 3) {
 				String newString = fuseArray(msg, 1);
@@ -1602,20 +1603,27 @@ public class ReceiverBot extends PircBot {
 			return;
 		}		
 		
-		// !balance - All
-		// Figure out how to adjust user's balance with this...paiefapihfnapesof
-		if ((msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]
-				.equalsIgnoreCase(prefix + "bal")))) {
+		// !balance
+		if (msg[0].equalsIgnoreCase(prefix + "balance")) {
 			log("RB: Matched command !balance");
+			
+			return;
+		}
+		
+		// !currency - All
+		// Figure out how to adjust user's balance with this...paiefapihfnapesof
+		if ((msg[0].equalsIgnoreCase(prefix + "currency") || (msg[0]
+				.equalsIgnoreCase(prefix + "curr")) || (msg[0]
+						.equalsIgnoreCase(prefix + "curr"))) && isOp) {
+			log("RB: Matched command !currency");
 			if (msg.length < 3) {
 				send(channel,
-						"Syntax: \"!balance set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+						"Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
 			} else if (msg.length > 2) {
-				if (msg[1].equalsIgnoreCase("set") && msg.length > 3 && isOp) {
+				if (msg[1].equalsIgnoreCase("set") && msg.length > 3) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
-					balance = Channel.balance;
-					String value = fuseArray(msg, 3);
+					Long balance = ;
 
 					channelInfo.setBalance(key, balance);
 
@@ -1625,42 +1633,14 @@ public class ReceiverBot extends PircBot {
 						|| msg[1].equalsIgnoreCase("remove")) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
-					boolean removed = channelInfo.removeCommand(key);
-
-					channelInfo.removeRepeatCommand(key);
-					channelInfo.removeScheduledCommand(key);
+					//Long balance = balance;
+					boolean removed = channelInfo.removeBalance(key, null);
 					if (removed) {
 						send(channel, key + " balance cleared.");
 					} else
 						send(channel, key + " doesn't exist.");
 
-				} else if (msg[1].equalsIgnoreCase("update")
-						&& msg.length >= 4) {
-					String command = msg[2].toLowerCase();
-					String levelStr = msg[3].toLowerCase();
-					int level = 0;
-					if (channelInfo.getBalance(key, newConch) != null) {
-						if (levelStr.equalsIgnoreCase("owner")
-								|| levelStr.equalsIgnoreCase("owners"))
-							level = 3;
-						if (levelStr.equalsIgnoreCase("mod")
-								|| levelStr.equalsIgnoreCase("mods"))
-							level = 2;
-						if (levelStr.equalsIgnoreCase("regular")
-								|| levelStr.equalsIgnoreCase("regulars"))
-							level = 1;
-						if (levelStr.equalsIgnoreCase("everyone"))
-							level = 0;
-
-						if (channelInfo.setCommandsRestriction(command, level))
-							send(channel, prefix + command + " restricted to "
-									+ levelStr + " only.");
-						else
-							send(channel, "Error setting restriction.");
-					} else {
-						send(channel, "Balance does not exist.");
-					}
-				}
+				} 
 			}
 			return;
 		}
