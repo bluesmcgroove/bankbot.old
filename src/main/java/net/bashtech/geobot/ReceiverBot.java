@@ -1603,22 +1603,23 @@ public class ReceiverBot extends PircBot {
 		}		
 		
 		// !balance - All
-		/*
+		// Figure out how to adjust user's balance with this...paiefapihfnapesof
 		if ((msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]
 				.equalsIgnoreCase(prefix + "bal")))) {
 			log("RB: Matched command !balance");
 			if (msg.length < 3) {
 				send(channel,
-						"Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
+						"Syntax: \"!balance set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
 			} else if (msg.length > 2) {
 				if (msg[1].equalsIgnoreCase("set") && msg.length > 3 && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
+					balance = Channel.balance;
 					String value = fuseArray(msg, 3);
 
-					channelInfo.setBalance(key, value, sender);
+					channelInfo.setBalance(key, balance);
 
-					send(channel, "Balance updated.");
+					send(channel, key + " balance updated.");
 
 				} else if (msg[1].equalsIgnoreCase("clear")
 						|| msg[1].equalsIgnoreCase("remove")) {
@@ -1629,16 +1630,16 @@ public class ReceiverBot extends PircBot {
 					channelInfo.removeRepeatCommand(key);
 					channelInfo.removeScheduledCommand(key);
 					if (removed) {
-						send(channel, "Command " + key + " removed.");
+						send(channel, key + " balance cleared.");
 					} else
-						send(channel, "Command " + key + " doesn't exist.");
+						send(channel, key + " doesn't exist.");
 
 				} else if (msg[1].equalsIgnoreCase("update")
 						&& msg.length >= 4) {
 					String command = msg[2].toLowerCase();
 					String levelStr = msg[3].toLowerCase();
 					int level = 0;
-					if (channelInfo.getBalance(command) != null) {
+					if (channelInfo.getBalance(key, newConch) != null) {
 						if (levelStr.equalsIgnoreCase("owner")
 								|| levelStr.equalsIgnoreCase("owners"))
 							level = 3;
@@ -1657,13 +1658,13 @@ public class ReceiverBot extends PircBot {
 						else
 							send(channel, "Error setting restriction.");
 					} else {
-						send(channel, "Command does not exist.");
+						send(channel, "Balance does not exist.");
 					}
 				}
 			}
 			return;
 		}
-		*/
+		
 		
 		// !repeat - Ops
 		if (msg[0].equalsIgnoreCase(prefix + "repeat") && isOp) {
