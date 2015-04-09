@@ -156,6 +156,8 @@ public class Channel {
 		commandCooldown = new HashMap<String, Long>();
 
 	}
+	
+
 
 	public Channel(String name, int mode) {
 		this(name);
@@ -608,6 +610,18 @@ public class Channel {
 	
 	
 	public void setBalance(String key, Long balance) {
+		/*
+		JSONArray balanceArr = new JSONArray();
+		Iterator itr = userBalances.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject balanceObj = new JSONObject();
+			balanceObj.put("key", pairs.getKey());
+			balanceObj.put("balance", pairs.getValue());
+
+		config.put("balance", balanceArr);
+		 */
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		System.out.println("User: " + key);
 		balance = balance.valueOf(balance);
@@ -623,12 +637,14 @@ public class Channel {
 		} else {
 			userBalances.put(key, balance);
 		}
-
+		
 		saveBalance(true);
+		}
 
-	}
+
 
 	// Save balance reference?
+	
 	private void saveUserBalance(boolean shouldUpdate) {
 		JSONArray balanceArr = new JSONArray();
 		Iterator itr = userBalances.entrySet().iterator();
@@ -643,6 +659,7 @@ public class Channel {
 		saveBalance(shouldUpdate);
 		}
 	}
+	
 	//end reference
 	
 	//increase balance

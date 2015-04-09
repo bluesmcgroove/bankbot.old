@@ -1625,13 +1625,13 @@ public class ReceiverBot extends PircBot {
 					key = key.toLowerCase();
 					Long balance = Long.valueOf(msg[3]);//.replaceAll("[0-9]", "")).longValue();
 
-					send(channel, key + balance + "test2");
 					channelInfo.setBalance(key, balance);
+					send(channel, "setBalance function");
 					
-					send(channel, "test3");
+					channelInfo.saveBalance(true);
+					send(channel, "saveBalance function");
 
 					send(channel, key + " balance updated.");
-					send(channel, "test4");
 
 				} else if (msg[1].equalsIgnoreCase("clear")
 						|| msg[1].equalsIgnoreCase("remove")) {
