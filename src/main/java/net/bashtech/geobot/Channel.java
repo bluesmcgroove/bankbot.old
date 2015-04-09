@@ -610,7 +610,7 @@ public class Channel {
 	public void setBalance(String key, Long balance) {
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		System.out.println("User: " + key);
-		balance = balance.longValue();
+		balance = balance.valueOf(balance);
 
 		if (key.length() < 1)
 			return;

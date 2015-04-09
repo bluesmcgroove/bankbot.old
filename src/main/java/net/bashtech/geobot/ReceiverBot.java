@@ -1623,11 +1623,15 @@ public class ReceiverBot extends PircBot {
 				if (msg[1].equalsIgnoreCase("set") && msg.length > 3) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
-					Long balance = ;
+					Long balance = Long.valueOf(msg[3]);//.replaceAll("[0-9]", "")).longValue();
 
+					send(channel, key + balance + "test2");
 					channelInfo.setBalance(key, balance);
+					
+					send(channel, "test3");
 
 					send(channel, key + " balance updated.");
+					send(channel, "test4");
 
 				} else if (msg[1].equalsIgnoreCase("clear")
 						|| msg[1].equalsIgnoreCase("remove")) {
