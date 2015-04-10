@@ -1401,6 +1401,7 @@ public class ReceiverBot extends PircBot {
 			return;
 		}
 
+		// !strawpoll
 		if ((msg[0].equalsIgnoreCase(prefix + "strawpoll") && isOp && msg.length > 1)) {
 			if (msg.length > 3) {
 				String newString = fuseArray(msg, 1);
@@ -1602,14 +1603,57 @@ public class ReceiverBot extends PircBot {
 			return;
 		}		
 		
-		// !balance - All
-		/*
-		 if (msg[0].equalsIgnoreCase(prefix + "balance")) {
+		// !balance
+		if (msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]).equalsIgnoreCase(prefix + "bal")) {
 			log("RB: Matched command !balance");
-			send(channel, BotManager.getInstance().bothelpMessage);
+
+				send(channel, "You have " + channelInfo.getBalance(sender) + " " + BotManager.getInstance().defaultCurrency);
+			
+			
 			return;
 		}
-		*/
+		
+		// !currency - All
+		// Figure out how to adjust user's balance with this...paiefapihfnapesof
+		if ((msg[0].equalsIgnoreCase(prefix + "currency") || (msg[0]
+				.equalsIgnoreCase(prefix + "curr")) || (msg[0]
+						.equalsIgnoreCase(prefix + "curr"))) && isOp) {
+			log("RB: Matched command !currency");
+			if (msg.length < 3) {
+				send(channel,
+						"Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+			} else if (msg.length > 2) {
+				if (msg[1].equalsIgnoreCase("set") && msg.length > 3) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					Long balance = Long.valueOf(msg[3]);//.replaceAll("[0-9]", "")).longValue();
+
+					channelInfo.setBalance(key, balance);
+					
+					channelInfo.saveBalance(true);
+					channelInfo.saveCurrency(true);
+
+					send(channel, key + " balance updated.");
+
+				} else if (msg[1].equalsIgnoreCase("clear")) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					//Long balance = balance;
+					boolean removed = channelInfo.removeBalance(key, null);
+					if (removed) {
+						send(channel, key + " balance cleared.");
+					} else
+						send(channel, key + " doesn't exist.");
+
+				} else if (msg[1].equalsIgnoreCase("get")) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key=key.toLowerCase();
+						send(channel, key + " balance is " + channelInfo.getBalance(key));
+				}
+			}
+			return;
+		}
+		
 		
 		// !repeat - Ops
 		if (msg[0].equalsIgnoreCase(prefix + "repeat") && isOp) {

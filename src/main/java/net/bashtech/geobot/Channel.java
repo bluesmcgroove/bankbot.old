@@ -35,9 +35,11 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public JSONObject config;
+	public JSONObject balconfig;
 
 	private String channel;
 	private String twitchname;
+	private String balancename;
 
 	boolean staticChannel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -88,6 +90,7 @@ public class Channel {
 	String clickToTweetFormat;
 	private boolean filterColors;
 	private boolean filterMe;
+	public static long defaultBalance = 1000;
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
 	Map<String, EnumMap<FilterType, Integer>> warningCount;
@@ -103,8 +106,10 @@ public class Channel {
 	private long sinceWp = System.currentTimeMillis();
 	private int wpCount = 0;
 	private String bullet = "#!";
+	private String currency = "Points";
 
 	private JSONObject defaults = new JSONObject();
+	private JSONObject balDefaults = new JSONObject();
 
 	private int cooldown = 0;
 
@@ -127,11 +132,17 @@ public class Channel {
 	// private long timeAliveStart = System.currentTimeMillis();
 	private boolean streamAlive = false;
 	private boolean urbanEnabled = false;
+	private boolean currencyEnabled = false;
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
+	//Figure out how to add balance hashmap
+	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
+	
+	
 
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
+		balancename = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -143,16 +154,43 @@ public class Channel {
 			config = new JSONObject();
 		}
 
+		
+		try {
+			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
+			balconfig = (JSONObject) balobj;
+			
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Generating new balance config for " + channel);
+			balconfig = new JSONObject();
+		}
+		
+		
 		loadProperties(name);
+
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
 		}
-
+		/*
+		try {
+			  Thread.sleep(500);	  
+			}
+			catch (Exception e) {}	   
+			
+		*/
+		loadBalances(balancename);
+		System.out.println("Load Balances");
+		System.out.println(balconfig.toJSONString());
+		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
 		commandCooldown = new HashMap<String, Long>();
 
 	}
+	
+
 
 	public Channel(String name, int mode) {
 		this(name);
@@ -231,8 +269,18 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	public void setCurrency(String newCurrency){
+		currency = newCurrency;
+		config.put("currency", newCurrency);
+		saveConfig(true);
+	}
+	
 	public String getChannelBullet() {
 		return bullet;
+	}
+	
+	public String getCurrency() {
+		return currency;
 	}
 
 	public void increaseWpCount() {
@@ -400,6 +448,7 @@ public class Channel {
 		saveCommands(true);
 
 	}
+	
 	public void editCommand(String key, String command, String adder) {
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		System.out.println("Key: " + key);
@@ -449,6 +498,9 @@ public class Channel {
 			return false;
 
 	}
+	
+	
+	
 
 	public void saveCommands(Boolean shouldSendUpdate) {
 		JSONArray commandsArr = new JSONArray();
@@ -578,6 +630,171 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	
+	// Save balances to JSON
+
+	public Long getBalance(String key) {
+		key = key.toLowerCase();
+		loadBalances(channel);
+
+		if (userBalances.containsKey(key)) {
+			return userBalances.get(key);
+		} else {
+			return userBalances.put(key, defaultBalance);
+		}
+	}
+	
+	
+	public void setBalance(String key, Long balance) {
+		
+		
+		/*
+		JSONArray balanceArr = new JSONArray();
+		Iterator itr = userBalances.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject balanceObj = new JSONObject();
+			balanceObj.put("key", pairs.getKey());
+			balanceObj.put("balance", pairs.getValue());
+
+		balconfig.put("balance", balanceArr);
+		
+		
+		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+		System.out.println("Key: " + key);
+		command = command.replaceAll(",,", "");
+
+		if (key.length() < 1)
+			return;
+
+		if (commands.containsKey(key)) {
+
+			commands.remove(key);
+			commandAdders.remove(key);
+			commands.put(key, command);
+			commandAdders.put(key, adder);
+
+		} else {
+			commands.put(key, command);
+			commandAdders.put(key, adder);
+			commandCounts.put(key, 0);
+		}
+		
+		
+		
+		*/
+		
+		key = key.toLowerCase()/*.replaceAll("[^a-zA-Z0-9]", "")*/;
+		System.out.println("User: " + key);
+		balance = balance.longValue();
+
+		if (key.length() < 1)
+			return;
+
+		if (userBalances.containsKey(key)) {
+
+			userBalances.remove(key);
+			userBalances.put(key, balance);
+
+		} else {
+			userBalances.put(key, balance);
+		}
+		
+		saveBalance(true);
+		
+	}
+	
+	public boolean removeBalance(String key, Long balance){
+		if(userBalances.containsKey(key)){
+			userBalances.replace(key, getBalance(key), defaultBalance);
+			
+			saveBalance(true);
+			return true;
+		}
+		return false;
+	}
+
+
+	// Save balance reference?
+	
+	void saveBalance(boolean shouldUpdate) {
+		JSONArray balanceArr = new JSONArray();
+		Iterator itr = userBalances.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject balanceObj = new JSONObject();
+			balanceObj.put("key", pairs.getKey());
+			balanceObj.put("balance", pairs.getValue());
+			
+			balanceArr.add(balanceObj);
+			balconfig.put("userBalances", balanceArr);
+			saveCurrency(true);
+		}
+		
+		
+	}
+	
+	/*
+		JSONArray commandsArr = new JSONArray();
+
+		Iterator itr = commands.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject commandObj = new JSONObject();
+			commandObj.put("key", pairs.getKey());
+			commandObj.put("value", pairs.getValue());
+			if (commandsRestrictions.containsKey(pairs.getKey())) {
+				commandObj.put("restriction",
+						commandsRestrictions.get(pairs.getKey()));
+			} else {
+				commandObj.put("restriction", 1);
+			}
+			if (commandAdders.containsKey(pairs.getKey())) {
+				commandObj.put("editor", commandAdders.get(pairs.getKey()));
+			} else
+				commandObj.put("editor", null);
+			commandObj.put("count", commandCounts.get(pairs.getKey()));
+			commandsArr.add(commandObj);
+
+		}
+
+		config.put("commands", commandsArr);
+		saveConfig(shouldSendUpdate);
+	}
+	*/
+	
+	//end reference
+	
+	//increase balance
+	
+	public void increaseBalance(String key, Long incBal) {
+		key = key.toLowerCase();
+		if (userBalances.containsKey(key)) {
+			Long currentBalance = userBalances.get(key);
+			long summedBalance = Math.addExact(currentBalance, incBal);
+			userBalances.put(key, summedBalance);
+			saveBalance(true);
+		}
+		saveBalance(false);
+
+	}
+	
+	//decrease balance
+	public void decreaseBalance(String key, Long decBal) {
+		key = key.toLowerCase();
+		if (userBalances.containsKey(key)) {
+			long currentBalance = userBalances.get(key);
+			long subtrBalance = Math.subtractExact(currentBalance, decBal);
+			userBalances.put(key, subtrBalance);
+			saveBalance(true);
+		}
+		saveBalance(false);
+
+	}
+	
 	public void setScheduledCommand(String key, String pattern, int diff) {
 		if (commandsSchedule.containsKey(key)) {
 			commandsSchedule.get(key).s.stop();
@@ -634,7 +851,7 @@ public class Channel {
 		config.put("scheduledCommands", scheduledCommands);
 		saveConfig(true);
 	}
-
+	
 	public ArrayList<String> getCommandList() {
 
 		ArrayList<String> sorted = new ArrayList<String>(commands.keySet());
@@ -725,6 +942,7 @@ public class Channel {
 		config.put("autoReplies", autoReplies);
 		saveConfig(true);
 	}
+
 
 	// #####################################################
 
@@ -1546,6 +1764,7 @@ public class Channel {
 		// defaults.put("channel", channel);
 		defaults.put("ignoredUsers", new JSONArray());
 		defaults.put("urbanEnabled", true);
+		defaults.put("currencyEnabled", true);
 		defaults.put("extraLifeID", 0);
 		defaults.put("subsRegsMinusLinks", new Boolean(false));
 		defaults.put("filterCaps", new Boolean(false));
@@ -1602,6 +1821,7 @@ public class Channel {
 		defaults.put("wpTimer", new Boolean(false));
 		defaults.put("wpCount", 0);
 		defaults.put("bullet", BotManager.getInstance().defaultBullet);
+		defaults.put("currency", BotManager.getInstance().defaultCurrency);
 		defaults.put("cooldown", 5);
 
 		defaults.put("maxViewers", 0);
@@ -1614,6 +1834,9 @@ public class Channel {
 		defaults.put("quotes", new JSONArray());
 
 		defaults.put("raidWhitelist", new JSONArray());
+		
+		// User Balance JSONArray
+		//defaults.put("userBalances", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1628,12 +1851,31 @@ public class Channel {
 		}
 		saveConfig(false);
 	}
+	
+	private void setBalanceDefaults() {
+		balDefaults.put("userBalances", new JSONArray());
+
+		Iterator it = defaults.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry) it.next();
+			String key = String.valueOf(pairs.getKey());
+			Object value = pairs.getValue();
+			if (value instanceof Integer) {
+				value = Integer.parseInt(String.valueOf(value)) * 1L;
+			}
+			if (!balconfig.containsKey(key))
+				balconfig.put(key, value);
+		}
+		
+		
+	}
 
 	private void loadProperties(String name) {
 
 		setDefaults();
 
 		urbanEnabled = Boolean.valueOf((Boolean) config.get("urbanEnabled"));
+		currencyEnabled = Boolean.valueOf((Boolean) config.get("currencyEnabled"));
 		// channel = config.getString("channel");
 
 		subsRegsMinusLinks = Boolean.valueOf((Boolean) config
@@ -1662,6 +1904,7 @@ public class Channel {
 		wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
 		wpCount = ((Long) config.get("wpCount")).intValue();
 		bullet = (String) config.get("bullet");
+		currency = (String) config.get("curency");
 		cooldown = ((Long) config.get("cooldown")).intValue();
 		sincePunish = (Long) config.get("sincePunish");
 
@@ -1739,7 +1982,7 @@ public class Channel {
 				raidWhitelist.add((String) raidWhitelistArray.get(i));
 			}
 		}
-
+		//TODO learn how to create array from command array? Line 1904
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
 		for (int i = 0; i < commandsArray.size(); i++) {
@@ -1876,11 +2119,65 @@ public class Channel {
 
 				}
 			}
+		
+			// TODO Create JSONArray for user balances. Learn from Line 1766?
+			/*
+			JSONArray balanceArray = (JSONArray) config.get("userBalances");
+
+			for (int i = 0; i < userBalances.size(); i++) {
+				JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+				userBalances.put((String) balanceObject.get("name"),
+						(Long) balanceObject.get("balance"));
+				
+			}
+			*/
+			
 
 		}
 		saveConfig(true);
 
 	}
+	
+	private void loadBalances(String name){
+		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+
+		for (int i = 0; i < userBalances.size(); i++) {
+			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+			userBalances.put((String) balanceObject.get("key"),
+					(Long) balanceObject.get("balance"));
+			
+			/*
+			JSONArray commandsArray = (JSONArray) config.get("commands"); 
+			
+			for (int i = 0; i < commandsArray.size(); i++) {
+			JSONObject commandObject = (JSONObject) commandsArray.get(i);
+			commands.put((String) commandObject.get("key"),
+					(String) commandObject.get("value"));
+			if (commandObject.containsKey("restriction")) {
+				commandsRestrictions.put((String) commandObject.get("key"),
+						((Long) commandObject.get("restriction")).intValue());
+			}
+			if (commandObject.containsKey("count")
+					&& commandObject.get("count") != null) {
+				commandCounts.put((String) commandObject.get("key"),
+						((Long) commandObject.get("count")).intValue());
+			} else {
+				commandCounts.put((String) commandObject.get("key"), 0);
+			}
+			if (commandObject.containsKey("editor")
+					&& commandObject.get("editor") != null) {
+				commandAdders.put((String) commandObject.get("key"),
+						(String) commandObject.get("editor"));
+			} else {
+				commandAdders.put((String) commandObject.get("key"), null);
+			}
+
+		}
+			*/
+		}
+		saveCurrency(false);
+	}
+	
 
 	public void setMode(int mode) {
 		this.mode = mode;
@@ -1977,24 +2274,23 @@ public class Channel {
 		}
 	}
 	
-	//Save currency balances
+	//Save currency balances?
 	
-	/*
-	  public void saveBalances(Boolean shouldSendUpdate) {
+	//Should be like saveConfig
+	  public void saveCurrency(Boolean shouldUpdate) {
 		try {
 
-			FileWriter file = new FileWriter(twitchname + "balance.json");
+			FileWriter file = new FileWriter(twitchname + "balances.json");
 
 			StringWriter out = new StringWriter();
-			JSONValue.writeJSONString(config, out);
+			JSONValue.writeJSONString(balconfig, out);
 			String jsonText = out.toString();
 			file.write(jsonText);
 			// file.write(config.toJSONString());
 			file.flush();
 			file.close();
-			if (shouldSendUpdate) {
-				BotManager.getInstance();
-						config.toJSONString();
+			if (shouldUpdate) {
+				BotManager.getInstance().postCoebotConfig(balconfig.toJSONString(), jsonText);
 			}
 
 		} catch (IOException e) {
@@ -2002,7 +2298,7 @@ public class Channel {
 		}
 	}
 	
-	 */
+	 
 
 	public void setUrban(boolean enabled) {
 		urbanEnabled = enabled;

@@ -73,6 +73,7 @@ public class BotManager {
 	boolean useEventFeed;
 	String eventFeedURL;
 	String defaultBullet;
+	String defaultCurrency;
 
 	Map<Integer, List<Pattern>> banPhraseLists;
 	// ********
@@ -681,9 +682,13 @@ public class BotManager {
 		if(!config.keyExists("defaultbullet")){
 			config.setString("defaultbullet", "#!");
 		}
+		if(!config.keyExists("defaultcurrency")){
+			config.setString("defaultcurrency", "Points");
+		}
 
 		// ********
 		defaultBullet = config.getString("defaultbullet");
+		defaultCurrency = config.getString("defaultcurrency");
 		nick = config.getString("nick");
 		server = config.getString("server");
 		port = Integer.parseInt(config.getString("port"));
