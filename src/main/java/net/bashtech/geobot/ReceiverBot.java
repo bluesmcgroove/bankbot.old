@@ -1625,8 +1625,9 @@ public class ReceiverBot extends PircBot {
 			log("RB: Matched command !currency");
 			
 			if (msg.length < 3) {
-				
-				send(channel, sender + " balance is " + channelInfo.getBalance(sender));
+				String key = sender.toLowerCase();
+				send(channel, key + " sent this message.");
+				send(channel, sender + " balance is " + channelInfo.getBalance(key));
 				//send(channel, "Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
 				
 			} else if (msg.length > 2) {

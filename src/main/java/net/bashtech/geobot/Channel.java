@@ -635,31 +635,30 @@ public class Channel {
 
 	public Long getBalance(String key) {
 		key = key.toLowerCase();
-
+		
 		if (userBalances.containsKey(key)) {
 			return userBalances.get(key);
 		} else {
-			return userBalances.put(key, defaultBalance);
+			return null/*userBalances.put(key, defaultBalance)*/;
 		}
 	}
 	
+	/*
+	 public String getCommand(String key) {
+		key = key.toLowerCase();
+
+		if (commands.containsKey(key)) {
+			return commands.get(key);
+		} else {
+			return null;
+		}
+	}
+	*/
 	
 	public void setBalance(String key, Long balance) {
 		
 		
 		/*
-		JSONArray balanceArr = new JSONArray();
-		Iterator itr = userBalances.entrySet().iterator();
-
-		while (itr.hasNext()) {
-			Map.Entry pairs = (Map.Entry) itr.next();
-			JSONObject balanceObj = new JSONObject();
-			balanceObj.put("key", pairs.getKey());
-			balanceObj.put("balance", pairs.getValue());
-
-		balconfig.put("balance", balanceArr);
-		
-		
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		System.out.println("Key: " + key);
 		command = command.replaceAll(",,", "");
@@ -679,12 +678,9 @@ public class Channel {
 			commandAdders.put(key, adder);
 			commandCounts.put(key, 0);
 		}
-		
-		
-		
 		*/
 		
-		key = key.toLowerCase()/*.replaceAll("[^a-zA-Z0-9]", "")*/;
+		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		System.out.println("User: " + key);
 		balance = balance.longValue();
 
@@ -693,7 +689,7 @@ public class Channel {
 
 		if (userBalances.containsKey(key)) {
 
-			userBalances.remove(key);
+			userBalances.remove(balance);
 			userBalances.put(key, balance);
 
 		} else {
