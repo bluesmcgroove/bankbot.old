@@ -4,7 +4,7 @@ global.properties
 # Unnessecary files
 target/maven-status/
 target/maven-archiver/
-target/*
+target/
 globalbannedwords.cfg
 
 #################
