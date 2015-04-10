@@ -1604,6 +1604,7 @@ public class ReceiverBot extends PircBot {
 		}		
 		
 		// !balance
+		/*
 		if (msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]).equalsIgnoreCase(prefix + "bal")) {
 			log("RB: Matched command !balance");
 
@@ -1612,18 +1613,24 @@ public class ReceiverBot extends PircBot {
 			
 			return;
 		}
+		*/
 		
 		// !currency - All
 		// Figure out how to adjust user's balance with this...paiefapihfnapesof
-		if ((msg[0].equalsIgnoreCase(prefix + "currency") || (msg[0]
-				.equalsIgnoreCase(prefix + "curr")) || (msg[0]
-						.equalsIgnoreCase(prefix + "curr"))) && isOp) {
+		if ((msg[0].equalsIgnoreCase(prefix + "balance")) || 
+			(msg[0].equalsIgnoreCase(prefix + "bal")) || 
+			(msg[0].equalsIgnoreCase(prefix + "currency")) || 
+			(msg[0].equalsIgnoreCase(prefix + "curr")) || 
+			(msg[0].equalsIgnoreCase(prefix + "cur"))) {
 			log("RB: Matched command !currency");
+			
 			if (msg.length < 3) {
-				send(channel,
-						"Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+				
+				send(channel, sender + " balance is " + channelInfo.getBalance(sender));
+				//send(channel, "Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+				
 			} else if (msg.length > 2) {
-				if (msg[1].equalsIgnoreCase("set") && msg.length > 3) {
+				if (msg[1].equalsIgnoreCase("set") && msg.length > 3 && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
 					Long balance = Long.valueOf(msg[3]);//.replaceAll("[0-9]", "")).longValue();
@@ -1635,7 +1642,7 @@ public class ReceiverBot extends PircBot {
 
 					send(channel, key + " balance updated.");
 
-				} else if (msg[1].equalsIgnoreCase("clear")) {
+				} else if (msg[1].equalsIgnoreCase("clear") && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
 					//Long balance = balance;
@@ -1648,7 +1655,11 @@ public class ReceiverBot extends PircBot {
 				} else if (msg[1].equalsIgnoreCase("get")) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key=key.toLowerCase();
+					
 						send(channel, key + " balance is " + channelInfo.getBalance(key));
+						
+				} else if (msg[1].equalsIgnoreCase("help") && isOp) {
+					send(channel, "Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
 				}
 			}
 			return;
