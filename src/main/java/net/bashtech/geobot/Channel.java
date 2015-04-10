@@ -635,7 +635,6 @@ public class Channel {
 
 	public Long getBalance(String key) {
 		key = key.toLowerCase();
-		loadBalances(channel);
 
 		if (userBalances.containsKey(key)) {
 			return userBalances.get(key);
