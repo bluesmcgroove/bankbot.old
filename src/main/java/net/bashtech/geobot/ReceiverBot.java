@@ -1607,7 +1607,7 @@ public class ReceiverBot extends PircBot {
 		if (msg[0].equalsIgnoreCase(prefix + "balance")) {
 			log("RB: Matched command !balance");
 			
-			send(channel, "You have" + channelInfo.getBalance(sender));
+			send(channel, "You have " + channelInfo.getBalance(sender) + " " + BotManager.getInstance().defaultCurrency);
 			
 			return;
 		}
@@ -1628,15 +1628,13 @@ public class ReceiverBot extends PircBot {
 					Long balance = Long.valueOf(msg[3]);//.replaceAll("[0-9]", "")).longValue();
 
 					channelInfo.setBalance(key, balance);
-					send(channel, "setBalance function");
 					
 					channelInfo.saveBalance(true);
-					send(channel, "saveBalance function");
+					channelInfo.saveCurrency(true);
 
 					send(channel, key + " balance updated.");
 
-				} else if (msg[1].equalsIgnoreCase("clear")
-						|| msg[1].equalsIgnoreCase("remove")) {
+				} else if (msg[1].equalsIgnoreCase("clear")) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
 					//Long balance = balance;

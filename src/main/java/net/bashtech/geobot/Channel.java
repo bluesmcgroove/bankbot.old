@@ -89,7 +89,7 @@ public class Channel {
 	String clickToTweetFormat;
 	private boolean filterColors;
 	private boolean filterMe;
-	public long defaultBalance = 0L;
+	public long defaultBalance = 1000;
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
 	Map<String, EnumMap<FilterType, Integer>> warningCount;
@@ -135,6 +135,8 @@ public class Channel {
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
 	//Figure out how to add balance hashmap
 	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
+	
+	private Timer timer = new Timer();
 
 	public Channel(String name) {
 		channel = name;
@@ -150,6 +152,7 @@ public class Channel {
 			config = new JSONObject();
 		}
 
+		
 		try {
 			Object balobj = parser.parse(new FileReader(channel + "balances.json"));
 			balconfig = (JSONObject) balobj;
@@ -160,17 +163,39 @@ public class Channel {
 			balconfig = new JSONObject();
 		}
 		
+		
 		loadProperties(name);
+		balanceCaller();
+
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
 		}
-
+		
+		//loadBalances(name);
+		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
 		commandCooldown = new HashMap<String, Long>();
 
 	}
 	
+	
+	//load balances after a delay
+	public synchronized void balanceCaller() {
+	    this.timer.cancel(); //this will cancel the current task. if there is no active task, nothing happens
+	    this.timer = new Timer();
+	    long delay = 100;
+
+	    TimerTask action = new TimerTask()
+	    {
+	        public void run() {
+	            loadBalances(channel); //as you said in the comments: abc is a static method
+	        }
+
+	    };
+
+	    this.timer.schedule(action, delay); //this starts the task
+	}
 
 
 	public Channel(String name, int mode) {
@@ -756,6 +781,7 @@ public class Channel {
 			Long currentBalance = userBalances.get(key);
 			long summedBalance = Math.addExact(currentBalance, incBal);
 			userBalances.put(key, summedBalance);
+			saveBalance(true);
 		}
 		saveBalance(false);
 
@@ -768,6 +794,7 @@ public class Channel {
 			long currentBalance = userBalances.get(key);
 			long subtrBalance = Math.subtractExact(currentBalance, decBal);
 			userBalances.put(key, subtrBalance);
+			saveBalance(true);
 		}
 		saveBalance(false);
 
@@ -2153,7 +2180,7 @@ public class Channel {
 		}
 			*/
 		}
-		saveCurrency(true);
+		saveCurrency(false);
 	}
 	
 
