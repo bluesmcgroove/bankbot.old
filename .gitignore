@@ -4,7 +4,7 @@ global.properties
 # Unnessecary files
 target/maven-status/
 target/maven-archiver/
-target/#BLUESMCGROOVE.json
+target/*.json
 globalbannedwords.cfg
 
 #################

@@ -1607,6 +1607,8 @@ public class ReceiverBot extends PircBot {
 		if (msg[0].equalsIgnoreCase(prefix + "balance")) {
 			log("RB: Matched command !balance");
 			
+			send(channel, "You have" + channelInfo.getBalance(sender));
+			
 			return;
 		}
 		
@@ -1644,7 +1646,11 @@ public class ReceiverBot extends PircBot {
 					} else
 						send(channel, key + " doesn't exist.");
 
-				} 
+				} else if (msg[1].equalsIgnoreCase("get")) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key=key.toLowerCase();
+						send(channel, key + " balance is " + channelInfo.getBalance(key));
+				}
 			}
 			return;
 		}

@@ -614,7 +614,7 @@ public class Channel {
 	
 	// Save balances to JSON
 
-	public Long getBalance(String key, Long balance) {
+	public Long getBalance(String key) {
 		key = key.toLowerCase();
 
 		if (userBalances.containsKey(key)) {
@@ -665,7 +665,7 @@ public class Channel {
 		
 		*/
 		
-		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+		key = key.toLowerCase()/*.replaceAll("[^a-zA-Z0-9]", "")*/;
 		System.out.println("User: " + key);
 		balance = balance.longValue();
 
@@ -687,7 +687,7 @@ public class Channel {
 	
 	public boolean removeBalance(String key, Long balance){
 		if(userBalances.containsKey(key)){
-			userBalances.replace(key, getBalance(key, balance), defaultBalance);
+			userBalances.replace(key, getBalance(key), defaultBalance);
 			
 			saveBalance(true);
 			return true;
@@ -707,11 +707,44 @@ public class Channel {
 			JSONObject balanceObj = new JSONObject();
 			balanceObj.put("key", pairs.getKey());
 			balanceObj.put("balance", pairs.getValue());
-
-		balconfig.put("balance", balanceArr);
-		saveUserBalance(shouldUpdate);
+			
+			balanceArr.add(balanceObj);
+			balconfig.put("userBalances", balanceArr);
+			saveCurrency(shouldUpdate);
 		}
+		
+		
 	}
+	
+	/*
+		JSONArray commandsArr = new JSONArray();
+
+		Iterator itr = commands.entrySet().iterator();
+
+		while (itr.hasNext()) {
+			Map.Entry pairs = (Map.Entry) itr.next();
+			JSONObject commandObj = new JSONObject();
+			commandObj.put("key", pairs.getKey());
+			commandObj.put("value", pairs.getValue());
+			if (commandsRestrictions.containsKey(pairs.getKey())) {
+				commandObj.put("restriction",
+						commandsRestrictions.get(pairs.getKey()));
+			} else {
+				commandObj.put("restriction", 1);
+			}
+			if (commandAdders.containsKey(pairs.getKey())) {
+				commandObj.put("editor", commandAdders.get(pairs.getKey()));
+			} else
+				commandObj.put("editor", null);
+			commandObj.put("count", commandCounts.get(pairs.getKey()));
+			commandsArr.add(commandObj);
+
+		}
+
+		config.put("commands", commandsArr);
+		saveConfig(shouldSendUpdate);
+	}
+	*/
 	
 	//end reference
 	
@@ -2120,7 +2153,7 @@ public class Channel {
 		}
 			*/
 		}
-		saveUserBalance(true);
+		saveCurrency(true);
 	}
 	
 
@@ -2222,7 +2255,7 @@ public class Channel {
 	//Save currency balances?
 	
 	//Should be like saveConfig
-	  public void saveUserBalance(Boolean shouldUpdate) {
+	  public void saveCurrency(Boolean shouldUpdate) {
 		try {
 
 			FileWriter file = new FileWriter(twitchname + "balances.json");
