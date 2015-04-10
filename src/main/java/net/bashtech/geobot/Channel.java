@@ -39,6 +39,7 @@ public class Channel {
 
 	private String channel;
 	private String twitchname;
+	private String balancename;
 
 	boolean staticChannel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -141,6 +142,7 @@ public class Channel {
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
+		balancename = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -156,6 +158,8 @@ public class Channel {
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
 			balconfig = (JSONObject) balobj;
+			
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -169,13 +173,16 @@ public class Channel {
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
 		}
-		
+		/*
 		try {
-			  Thread.sleep(500);	  // half second
+			  Thread.sleep(500);	  
 			}
-			catch (Exception e) {}	   // this never happen... nobody check for it
-
-		loadBalances(name);
+			catch (Exception e) {}	   
+			
+		*/
+		loadBalances(balancename);
+		System.out.println("Load Balances");
+		System.out.println(balconfig.toJSONString());
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
@@ -628,6 +635,7 @@ public class Channel {
 
 	public Long getBalance(String key) {
 		key = key.toLowerCase();
+		loadBalances(channel);
 
 		if (userBalances.containsKey(key)) {
 			return userBalances.get(key);
