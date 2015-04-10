@@ -35,7 +35,7 @@ public class BotGUI extends JFrame {
 
     public BotGUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("RguBot");
+        setTitle("BankBot");
         this.setSize(650, 410);
 
         statuspane.setEditable(false);
