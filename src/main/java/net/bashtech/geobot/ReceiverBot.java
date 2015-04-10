@@ -1604,10 +1604,11 @@ public class ReceiverBot extends PircBot {
 		}		
 		
 		// !balance
-		if (msg[0].equalsIgnoreCase(prefix + "balance")) {
+		if (msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]).equalsIgnoreCase(prefix + "bal")) {
 			log("RB: Matched command !balance");
+
+				send(channel, "You have " + channelInfo.getBalance(sender) + " " + BotManager.getInstance().defaultCurrency);
 			
-			send(channel, "You have " + channelInfo.getBalance(sender) + " " + BotManager.getInstance().defaultCurrency);
 			
 			return;
 		}
