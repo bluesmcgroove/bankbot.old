@@ -39,7 +39,6 @@ public class Channel {
 
 	private String channel;
 	private String twitchname;
-	private String balancename;
 
 	boolean staticChannel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -100,13 +99,13 @@ public class Channel {
 	Map<String, Long> commandCooldown;
 	
 	String prefix;
+	String currency;
 	String emoteSet;
 	boolean subscriberRegulars;
 	private boolean wpOn;
 	private long sinceWp = System.currentTimeMillis();
 	private int wpCount = 0;
 	private String bullet = "#!";
-	private String currency = "Points";
 
 	private JSONObject defaults = new JSONObject();
 	private JSONObject balDefaults = new JSONObject();
@@ -137,12 +136,9 @@ public class Channel {
 	//Figure out how to add balance hashmap
 	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
 	
-	
-
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
-		balancename = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -180,7 +176,6 @@ public class Channel {
 			catch (Exception e) {}	   
 			
 		*/
-		loadBalances(balancename);
 		System.out.println("Load Balances");
 		System.out.println(balconfig.toJSONString());
 		
@@ -213,6 +208,15 @@ public class Channel {
 		this.prefix = prefix.charAt(0) + "";
 
 		config.put("commandPrefix", this.prefix);
+		saveConfig(true);
+	}
+	public String getCurrencyName() {
+		return currency;
+	}
+	public void setCurrencyName(String currencyName) {
+		this.currency = currencyName;
+
+		config.put("currencyName", this.currency);
 		saveConfig(true);
 	}
 
@@ -1931,6 +1935,7 @@ public class Channel {
 				.valueOf((Boolean) config.get("enableWarnings"));
 		timeoutDuration = ((Long) config.get("timeoutDuration")).intValue();
 		prefix = (String) config.get("commandPrefix");
+		currency = (String) config.get("currencyName") ;
 		emoteSet = (String) config.get("emoteSet");
 		subscriberRegulars = Boolean.valueOf((Boolean) config
 				.get("subscriberRegulars"));

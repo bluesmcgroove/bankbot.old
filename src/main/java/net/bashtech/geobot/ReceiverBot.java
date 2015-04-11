@@ -395,6 +395,10 @@ public class ReceiverBot extends PircBot {
 					channelInfo.setPrefix((String) actionObject.get("value"));
 					break;
 				}
+				case "set currency": {
+					channelInfo.setCurrencyName((String) actionObject.get("value"));
+					break;
+				}
 				}
 			}
 		} catch (Exception e) {
@@ -514,6 +518,7 @@ public class ReceiverBot extends PircBot {
 		Channel channelInfo = getChannelObject(targetChannel);
 		String twitchName = channelInfo.getTwitchName();
 		String prefix = channelInfo.getPrefix();
+		String currency = channelInfo.getCurrencyName();
 		bullet[0] = channelInfo.getChannelBullet();
 
 		if (!sender.equalsIgnoreCase(this.getNick()))
@@ -1602,33 +1607,38 @@ public class ReceiverBot extends PircBot {
 			}
 			return;
 		}		
-		
-		// !balance
-		/*
-		if (msg[0].equalsIgnoreCase(prefix + "balance") || (msg[0]).equalsIgnoreCase(prefix + "bal")) {
+		// !tip
+		if (msg[0].equalsIgnoreCase(prefix + "tip")) {
+			if (msg.length < 3) {
+				send(channel, "Syntax: \"tip [username] [number] - Username is the person and number is the ammount you wish to tip.\"");
+			} else {
+				String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
+				key = key.toLowerCase();
+				Long balance = Long.valueOf(msg[2]);
+				
+				channelInfo.decreaseBalance(sender, balance);
+				channelInfo.increaseBalance(key, balance);
+				send(channel, sender + " tipped " + balance + currency + " to " + key + ".");
+				
+			}
+		}
+		// Balance
+		if ((msg[0].equalsIgnoreCase(prefix + "balance")) || (msg[0].equalsIgnoreCase(prefix + "bal"))) {
 			log("RB: Matched command !balance");
-
-				send(channel, "You have " + channelInfo.getBalance(sender) + " " + BotManager.getInstance().defaultCurrency);
 			
+			send(channel, "You have " + channelInfo.getBalance(sender) + currency);
 			
 			return;
 		}
-		*/
-		
 		// !currency - All
-		// Figure out how to adjust user's balance with this...paiefapihfnapesof
-		if ((msg[0].equalsIgnoreCase(prefix + "balance")) || 
-			(msg[0].equalsIgnoreCase(prefix + "bal")) || 
-			(msg[0].equalsIgnoreCase(prefix + "currency")) || 
+		if ((msg[0].equalsIgnoreCase(prefix + "currency")) || 
 			(msg[0].equalsIgnoreCase(prefix + "curr")) || 
 			(msg[0].equalsIgnoreCase(prefix + "cur"))) {
 			log("RB: Matched command !currency");
 			
 			if (msg.length < 3) {
-				String key = sender.toLowerCase();
-				send(channel, key + " sent this message.");
-				send(channel, sender + " balance is " + channelInfo.getBalance(key));
-				//send(channel, "Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+				send(channel,
+						"Syntax: \"!currency set/clear/get/remove [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
 				
 			} else if (msg.length > 2) {
 				if (msg[1].equalsIgnoreCase("set") && msg.length > 3 && isOp) {
@@ -1641,7 +1651,7 @@ public class ReceiverBot extends PircBot {
 					channelInfo.saveBalance(true);
 					channelInfo.saveCurrency(true);
 
-					send(channel, key + " balance updated.");
+					send(channel, key + " balance updated to " + balance + currency + ".");
 
 				} else if (msg[1].equalsIgnoreCase("clear") && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
@@ -1649,7 +1659,7 @@ public class ReceiverBot extends PircBot {
 					//Long balance = balance;
 					boolean removed = channelInfo.removeBalance(key, null);
 					if (removed) {
-						send(channel, key + " balance cleared.");
+						send(channel, "The balance of "+ key + " was cleared.");
 					} else
 						send(channel, key + " doesn't exist.");
 
@@ -1657,10 +1667,25 @@ public class ReceiverBot extends PircBot {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key=key.toLowerCase();
 					
-						send(channel, key + " balance is " + channelInfo.getBalance(key));
-						
-				} else if (msg[1].equalsIgnoreCase("help") && isOp) {
-					send(channel, "Syntax: \"!currency set/clear/update [username] [number]\" - Name is the username and number is the amount you wish to adjust.");
+						send(channel, "The balance of " + key + " is " + channelInfo.getBalance(key) + currency);
+				} else if (msg[1].equalsIgnoreCase("remove") && isOp) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					Long balance = Long.valueOf(msg[3]);
+					
+					channelInfo.decreaseBalance(key, balance);
+					
+					send(channel, "The balance of " + key + " was decreased by " + balance + currency + ".");
+					
+				} else if (msg[1].equalsIgnoreCase("add") && isOp) {
+					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
+					key = key.toLowerCase();
+					Long balance = Long.valueOf(msg[3]);
+					
+					channelInfo.increaseBalance(key, balance);
+					
+					send(channel, "The balance of " + key + " was increased by " + balance + currency + ".");
+					
 				}
 			}
 			return;
@@ -3166,6 +3191,7 @@ public class ReceiverBot extends PircBot {
 					channelInfo.setMode(-1);
 					send(channel, "Special moderation mode activated.");
 				}
+			// Prefix
 			} else if (msg[1].equalsIgnoreCase("prefix")) {
 				if (msg.length > 2) {
 					if (msg[2].length() > 1) {
@@ -3181,6 +3207,10 @@ public class ReceiverBot extends PircBot {
 					send(channel,
 							"Command prefix is " + channelInfo.getPrefix());
 				}
+			// Currency Name
+			} else if (msg[1].equalsIgnoreCase("currency")) {
+					channelInfo.setCurrencyName(msg[2]);
+					send(channel, "Currency name is "+ channelInfo.getCurrencyName());				
 			} else if (msg[1].equalsIgnoreCase("emoteset") && msg.length > 2) {
 				channelInfo.setEmoteSet(msg[2]);
 				send(channel,
