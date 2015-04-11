@@ -2205,7 +2205,7 @@ public class Channel {
 	
 	private void loadBalances(String name){
 		
-		setBalanceDefaults();
+		//setBalanceDefaults();
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
 
 		for (int i = 0; i < userBalances.size(); i++) {
@@ -2213,10 +2213,12 @@ public class Channel {
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
 			
-			/*
-			JSONArray commandsArray = (JSONArray) config.get("commands"); 
+			saveCurrency(false);
 			
-			for (int i = 0; i < commandsArray.size(); i++) {
+			/*
+			JSONArray commandsArray = (JSONArray) config.get("commands");
+
+		for (int i = 0; i < commandsArray.size(); i++) {
 			JSONObject commandObject = (JSONObject) commandsArray.get(i);
 			commands.put((String) commandObject.get("key"),
 					(String) commandObject.get("value"));
@@ -2240,9 +2242,10 @@ public class Channel {
 			}
 
 		}
+		saveCommands(false);
 			*/
 		}
-		saveCurrency(false);
+		saveCurrency(true);
 	}
 	
 
