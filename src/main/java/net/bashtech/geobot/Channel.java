@@ -39,6 +39,7 @@ public class Channel {
 
 	private String channel;
 	private String twitchname;
+	private String balname;
 
 	boolean staticChannel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -139,6 +140,7 @@ public class Channel {
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
+		balname = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -165,6 +167,7 @@ public class Channel {
 		
 		
 		loadProperties(name);
+		loadBalances(balname);
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
@@ -204,6 +207,7 @@ public class Channel {
 		return prefix;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setPrefix(String prefix) {
 		this.prefix = prefix.charAt(0) + "";
 
@@ -213,6 +217,7 @@ public class Channel {
 	public String getCurrencyName() {
 		return currency;
 	}
+	@SuppressWarnings("unchecked")
 	public void setCurrencyName(String currencyName) {
 		this.currency = currencyName;
 
@@ -232,18 +237,21 @@ public class Channel {
 		return wpOn;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setStreamCount(int newCount) {
 		streamNumber = newCount;
 		config.put("streamCount", streamNumber);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setWp(boolean state) {
 		wpOn = state;
 		config.put("wpTimer", wpOn);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public long timeSinceSaid() {
 		long now = System.currentTimeMillis();
 		long differenceInSeconds = (now - sinceWp) / 1000L;
@@ -267,12 +275,14 @@ public class Channel {
 		return (differenceInSeconds);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setBullet(String newBullet) {
 		bullet = newBullet;
 		config.put("bullet", newBullet);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setCurrency(String newCurrency){
 		currency = newCurrency;
 		config.put("currency", newCurrency);
@@ -287,6 +297,7 @@ public class Channel {
 		return currency;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void increaseWpCount() {
 		wpCount++;
 		config.put("wpCount", wpCount);
@@ -301,6 +312,7 @@ public class Channel {
 		return emoteSet;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setEmoteSet(String emoteSet) {
 		this.emoteSet = emoteSet;
 
@@ -312,6 +324,7 @@ public class Channel {
 		return subsRegsMinusLinks;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setSubsRegsMinusLinks(boolean on) {
 
 		// subscribers.clear();
@@ -326,6 +339,7 @@ public class Channel {
 		return subscriberRegulars;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setSubscriberRegulars(boolean subscriberRegulars) {
 
 		// subscribers.clear();
@@ -350,6 +364,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void saveQuotes(boolean shouldSendUpdate) {
 		JSONArray quotesArray = new JSONArray();
 
@@ -506,6 +521,7 @@ public class Channel {
 	
 	
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void saveCommands(Boolean shouldSendUpdate) {
 		JSONArray commandsArr = new JSONArray();
 
@@ -614,6 +630,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void saveRepeatCommands() {
 		JSONArray repeatedCommands = new JSONArray();
 		Iterator itr = commandsRepeat.entrySet().iterator();
@@ -717,6 +734,7 @@ public class Channel {
 
 	// Save balance reference?
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void saveBalance(boolean shouldUpdate) {
 		JSONArray balanceArr = new JSONArray();
 		Iterator itr = userBalances.entrySet().iterator();
@@ -827,6 +845,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void saveScheduledCommands() {
 
 		JSONArray scheduledCommands = new JSONArray();
@@ -926,6 +945,7 @@ public class Channel {
 		return true;
 	}
 
+	@SuppressWarnings({ "unchecked", "unused" })
 	private void saveAutoReply() {
 		JSONArray triggerString = new JSONArray();
 		JSONArray responseString = new JSONArray();
@@ -949,6 +969,7 @@ public class Channel {
 		return topic;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setTopic(String s) {
 		topic = s;
 		config.put("topic", topic);
@@ -989,12 +1010,14 @@ public class Channel {
 		return filterSymbolsPercent;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterSymbolsMin(int symbols) {
 		filterSymbolsMin = symbols;
 		config.put("filterSymbolsMin", filterSymbolsMin);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterSymbolsPercent(int symbols) {
 		filterSymbolsPercent = symbols;
 		config.put("filterSymbolsPercent", filterSymbolsPercent);
@@ -1017,30 +1040,35 @@ public class Channel {
 		return filterCapsMinCapitals;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterCaps(boolean caps) {
 		filterCaps = caps;
 		config.put("filterCaps", filterCaps);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setfilterCapsPercent(int caps) {
 		filterCapsPercent = caps;
 		config.put("filterCapsPercent", filterCapsPercent);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setfilterCapsMinCharacters(int caps) {
 		filterCapsMinCharacters = caps;
 		config.put("filterCapsMinCharacters", filterCapsMinCharacters);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setfilterCapsMinCapitals(int caps) {
 		filterCapsMinCapitals = caps;
 		config.put("filterCapsMinCapitals", filterCapsMinCapitals);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterLinks(boolean links) {
 		filterLinks = links;
 		config.put("filterLinks", links);
@@ -1051,6 +1079,7 @@ public class Channel {
 		return filterLinks;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterOffensive(boolean option) {
 		filterOffensive = option;
 		config.put("filterOffensive", option);
@@ -1061,6 +1090,7 @@ public class Channel {
 		return filterOffensive;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterEmotes(boolean option) {
 		filterEmotes = option;
 		config.put("filterEmotes", option);
@@ -1071,6 +1101,7 @@ public class Channel {
 		return filterEmotes;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterSymbols(boolean option) {
 		filterSymbols = option;
 		config.put("filterSymbols", option);
@@ -1085,12 +1116,14 @@ public class Channel {
 		return filterMaxLength;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterMax(int option) {
 		filterMaxLength = option;
 		config.put("filterMaxLength", option);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterEmotesMax(int option) {
 		filterEmotesMax = option;
 		config.put("filterEmotesMax", option);
@@ -1105,6 +1138,7 @@ public class Channel {
 		return filterEmotesSingle;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterEmotesSingle(boolean filterEmotesSingle) {
 		this.filterEmotesSingle = filterEmotesSingle;
 
@@ -1112,6 +1146,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setAnnounceJoinParts(boolean bol) {
 		announceJoinParts = bol;
 		config.put("announceJoinParts", bol);
@@ -1122,6 +1157,7 @@ public class Channel {
 		return announceJoinParts;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterColor(boolean option) {
 		filterColors = option;
 		config.put("filterColors", option);
@@ -1132,6 +1168,7 @@ public class Channel {
 		return filterColors;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFilterMe(boolean option) {
 		filterMe = option;
 		config.put("filterMe", option);
@@ -1142,6 +1179,7 @@ public class Channel {
 		return filterMe;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setEnableWarnings(boolean option) {
 		enableWarnings = option;
 		config.put("enableWarnings", option);
@@ -1152,6 +1190,7 @@ public class Channel {
 		return enableWarnings;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setTimeoutDuration(int option) {
 		timeoutDuration = option;
 		config.put("timeoutDuration", option);
@@ -1175,6 +1214,7 @@ public class Channel {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addRegular(String name) {
 		synchronized (regulars) {
 			regulars.add(name.toLowerCase());
@@ -1193,6 +1233,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeRegular(String name) {
 		synchronized (regulars) {
 			if (regulars.contains(name.toLowerCase()))
@@ -1242,6 +1283,7 @@ public class Channel {
 	}
 
 	// ###################################################
+	@SuppressWarnings("unchecked")
 	public void addRaidWhitelist(String name) {
 		raidWhitelist.add(name.toLowerCase());
 		JSONArray raidWhitelistArray = new JSONArray();
@@ -1252,6 +1294,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void deleteRaidWhitelist(String name) {
 		raidWhitelist.remove(name);
 		JSONArray raidWhitelistArray = new JSONArray();
@@ -1285,6 +1328,7 @@ public class Channel {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addModerator(String name) {
 		synchronized (moderators) {
 			moderators.add(name.toLowerCase());
@@ -1302,6 +1346,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeModerator(String name) {
 		synchronized (moderators) {
 			if (moderators.contains(name.toLowerCase()))
@@ -1335,6 +1380,7 @@ public class Channel {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addOwner(String name) {
 		synchronized (owners) {
 			owners.add(name.toLowerCase());
@@ -1352,6 +1398,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeOwner(String name) {
 		synchronized (owners) {
 			if (owners.contains(name.toLowerCase()))
@@ -1376,6 +1423,7 @@ public class Channel {
 
 	// ###################################################
 
+	@SuppressWarnings("unchecked")
 	public void addPermittedDomain(String name) {
 		synchronized (permittedDomains) {
 			permittedDomains.add(name.toLowerCase());
@@ -1393,6 +1441,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removePermittedDomain(String name) {
 		synchronized (permittedDomains) {
 			for (int i = 0; i < permittedDomains.size(); i++) {
@@ -1431,6 +1480,7 @@ public class Channel {
 
 	// #################################################
 
+	@SuppressWarnings("unchecked")
 	public void addOffensive(String word) {
 		synchronized (offensiveWords) {
 			offensiveWords.add(word);
@@ -1463,6 +1513,7 @@ public class Channel {
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeOffensive(String word) {
 		synchronized (offensiveWords) {
 			if (offensiveWords.contains(word))
@@ -1499,6 +1550,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void clearBannedPhrases() {
 		offensiveWords.clear();
 		offensiveWordsRegex.clear();
@@ -1540,6 +1592,7 @@ public class Channel {
 
 	// ##################################################
 
+	@SuppressWarnings("unchecked")
 	public void setTopicFeature(boolean setting) {
 		this.useTopic = setting;
 		config.put("useTopic", this.useTopic);
@@ -1547,6 +1600,7 @@ public class Channel {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFiltersFeature(boolean setting) {
 		this.useFilters = setting;
 		config.put("useFilters", this.useFilters);
@@ -1557,12 +1611,14 @@ public class Channel {
 		return signKicks;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setSignKicks(boolean setting) {
 		this.signKicks = setting;
 		config.put("signKicks", this.signKicks);
 		saveConfig(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setLogging(boolean option) {
 		logChat = option;
 		config.put("logChat", option);
@@ -1595,6 +1651,7 @@ public class Channel {
 		}
 		return false;
 	}
+	@SuppressWarnings("unchecked")
 	public void checkViewerStats(String name) {
 		long viewers = JSONUtil.krakenViewers(name);
 		if (viewers > maxViewers) {
@@ -1616,12 +1673,14 @@ public class Channel {
 		return maxviewerDate;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void resetMaxViewers(int newMax) {
 		maxViewers = newMax;
 		config.put("maxViewers", maxViewers);
 		saveConfig(false);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void increasePunCount() {
 		punishCount++;
 		sincePunish = System.currentTimeMillis();
@@ -1634,6 +1693,7 @@ public class Channel {
 		return punishCount;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void alive(String name) {
 
 		long curViewers = JSONUtil.krakenViewers(name);
@@ -1643,6 +1703,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void dead(String name) {
 
 		streamNumber++;
@@ -1664,6 +1725,7 @@ public class Channel {
 		return clickToTweetFormat;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setClickToTweetFormat(String string) {
 		clickToTweetFormat = string;
 		config.put("clickToTweetFormat", clickToTweetFormat);
@@ -1747,6 +1809,7 @@ public class Channel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setUpdateDelay(int newDelay) {
 		updateDelay = newDelay;
 		config.put("updateDelay", newDelay);
@@ -1758,6 +1821,7 @@ public class Channel {
 		BotManager.getInstance().addChannel(channel, mode);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setDefaults() {
 
 		// defaults.put("channel", channel);
@@ -1851,6 +1915,7 @@ public class Channel {
 		saveConfig(false);
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setBalanceDefaults() {
 		balDefaults.put("userBalances", new JSONArray());
 
@@ -2139,6 +2204,8 @@ public class Channel {
 	}
 	
 	private void loadBalances(String name){
+		
+		//setBalanceDefaults();
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
 
 		for (int i = 0; i < userBalances.size(); i++) {
@@ -2146,10 +2213,12 @@ public class Channel {
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
 			
-			/*
-			JSONArray commandsArray = (JSONArray) config.get("commands"); 
+			saveCurrency(false);
 			
-			for (int i = 0; i < commandsArray.size(); i++) {
+			/*
+			JSONArray commandsArray = (JSONArray) config.get("commands");
+
+		for (int i = 0; i < commandsArray.size(); i++) {
 			JSONObject commandObject = (JSONObject) commandsArray.get(i);
 			commands.put((String) commandObject.get("key"),
 					(String) commandObject.get("value"));
@@ -2173,12 +2242,14 @@ public class Channel {
 			}
 
 		}
+		saveCommands(false);
 			*/
 		}
-		saveCurrency(false);
+		saveCurrency(true);
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public void setMode(int mode) {
 		this.mode = mode;
 		config.put("mode", this.mode);
@@ -2204,6 +2275,7 @@ public class Channel {
 	private long getTime() {
 		return (System.currentTimeMillis() / 1000L);
 	}
+	@SuppressWarnings("unchecked")
 	public void setCooldown(int newCooldown) {
 		cooldown = newCooldown;
 		config.put("cooldown", newCooldown);
@@ -2252,6 +2324,7 @@ public class Channel {
 		return (sb.toString());
 	}
 
+	@SuppressWarnings("static-access")
 	public void saveConfig(Boolean shouldSendUpdate) {
 		try {
 
@@ -2277,7 +2350,8 @@ public class Channel {
 	//Save currency balances?
 	
 	//Should be like saveConfig
-	  public void saveCurrency(Boolean shouldUpdate) {
+	  @SuppressWarnings("static-access")
+	public void saveCurrency(Boolean shouldUpdate) {
 		try {
 
 			FileWriter file = new FileWriter(twitchname + "balances.json");
@@ -2300,6 +2374,7 @@ public class Channel {
 	
 	 
 
+	@SuppressWarnings("unchecked")
 	public void setUrban(boolean enabled) {
 		urbanEnabled = enabled;
 		config.put("urbanEnabled", enabled);
@@ -2315,6 +2390,7 @@ public class Channel {
 		return ignoredUsers;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean addIgnoredUser(String user) {
 		if (ignoredUsers.contains(user)) {
 			return false;
@@ -2327,6 +2403,7 @@ public class Channel {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean removeIgnoredUser(String user) {
 		if (ignoredUsers.contains(user)) {
 			ignoredUsers.remove(user);
