@@ -1618,7 +1618,7 @@ public class ReceiverBot extends PircBot {
 				
 				channelInfo.decreaseBalance(sender, balance);
 				channelInfo.increaseBalance(key, balance);
-				send(channel, sender + " tipped " + balance + currency + " to " + key + ".");
+				send(channel, sender + " tipped " + balance + " " + currency + " to " + key + ".");
 				
 			}
 		}
@@ -1626,7 +1626,7 @@ public class ReceiverBot extends PircBot {
 		if ((msg[0].equalsIgnoreCase(prefix + "balance")) || (msg[0].equalsIgnoreCase(prefix + "bal"))) {
 			log("RB: Matched command !balance");
 			
-			send(channel, "You have " + channelInfo.getBalance(sender) + currency);
+			send(channel, "You have " + channelInfo.getBalance(sender) + " " + currency);
 			
 			return;
 		}
@@ -1651,7 +1651,7 @@ public class ReceiverBot extends PircBot {
 					channelInfo.saveBalance(true);
 					channelInfo.saveCurrency(true);
 
-					send(channel, key + " balance updated to " + balance + currency + ".");
+					send(channel, key + " balance updated to " + balance + " " + currency + ".");
 
 				} else if (msg[1].equalsIgnoreCase("clear") && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
@@ -1667,7 +1667,7 @@ public class ReceiverBot extends PircBot {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key=key.toLowerCase();
 					
-						send(channel, "The balance of " + key + " is " + channelInfo.getBalance(key) + currency);
+						send(channel, "The balance of " + key + " is " + channelInfo.getBalance(key) + " " + currency);
 				} else if (msg[1].equalsIgnoreCase("remove") && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
 					key = key.toLowerCase();
@@ -1675,7 +1675,7 @@ public class ReceiverBot extends PircBot {
 					
 					channelInfo.decreaseBalance(key, balance);
 					
-					send(channel, "The balance of " + key + " was decreased by " + balance + currency + ".");
+					send(channel, "The balance of " + key + " was decreased by " + balance + " " + currency + ".");
 					
 				} else if (msg[1].equalsIgnoreCase("add") && isOp) {
 					String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
@@ -1684,7 +1684,7 @@ public class ReceiverBot extends PircBot {
 					
 					channelInfo.increaseBalance(key, balance);
 					
-					send(channel, "The balance of " + key + " was increased by " + balance + currency + ".");
+					send(channel, "The balance of " + key + " was increased by " + balance + " " + currency + ".");
 					
 				}
 			}

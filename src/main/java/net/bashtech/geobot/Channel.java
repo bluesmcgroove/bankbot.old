@@ -139,6 +139,7 @@ public class Channel {
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
+		String balname = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -165,6 +166,8 @@ public class Channel {
 		
 		
 		loadProperties(name);
+		loadBalances(balname);
+		System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
@@ -176,8 +179,9 @@ public class Channel {
 			catch (Exception e) {}	   
 			
 		*/
-		System.out.println("Load Balances");
-		System.out.println(balconfig.toJSONString());
+		System.out.println("Load key 'bluesmcgroove' from balconfig");
+		Object key = "bluesmcgroove";
+		System.out.println(balconfig.get(key));
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
@@ -638,12 +642,16 @@ public class Channel {
 	// Save balances to JSON
 
 	public Long getBalance(String key) {
+		
 		key = key.toLowerCase();
 		
-		if (userBalances.containsKey(key)) {
+		if (balconfig.containsKey(key)) {
+			System.out.println("Return balance from " + key + ".");
 			return userBalances.get(key);
 		} else {
+			System.out.println("Return null");
 			return null/*userBalances.put(key, defaultBalance)*/;
+			
 		}
 	}
 	
@@ -685,15 +693,14 @@ public class Channel {
 		*/
 		
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
-		System.out.println("User: " + key);
 		balance = balance.longValue();
+		System.out.println("Setting " + key + "balance to " + balance + ".");
 
 		if (key.length() < 1)
 			return;
 
 		if (userBalances.containsKey(key)) {
-
-			userBalances.remove(balance);
+			
 			userBalances.put(key, balance);
 
 		} else {
@@ -730,6 +737,7 @@ public class Channel {
 			balanceArr.add(balanceObj);
 			balconfig.put("userBalances", balanceArr);
 			saveCurrency(true);
+			System.out.println("Saving " + userBalances.toString());
 		}
 		
 		
@@ -1982,7 +1990,7 @@ public class Channel {
 				raidWhitelist.add((String) raidWhitelistArray.get(i));
 			}
 		}
-		//TODO learn how to create array from command array? Line 1904
+		
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
 		for (int i = 0; i < commandsArray.size(); i++) {
@@ -2139,13 +2147,16 @@ public class Channel {
 	}
 	
 	private void loadBalances(String name){
+		
+		System.out.println("Balances loaded from " + name);
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
 
 		for (int i = 0; i < userBalances.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
-			
+					
+					saveCurrency(false);
 			/*
 			JSONArray commandsArray = (JSONArray) config.get("commands"); 
 			
@@ -2175,7 +2186,7 @@ public class Channel {
 		}
 			*/
 		}
-		saveCurrency(false);
+		saveCurrency(true);
 	}
 	
 
@@ -2296,6 +2307,7 @@ public class Channel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Saving" + balconfig.toJSONString());
 	}
 	
 	 
