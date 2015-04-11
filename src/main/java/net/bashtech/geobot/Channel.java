@@ -645,11 +645,11 @@ public class Channel {
 		
 		key = key.toLowerCase();
 		
-		if (balconfig.containsKey(key)) {
+		if (userBalances.containsKey(key)) {
 			System.out.println("Return balance from " + key + ".");
 			return userBalances.get(key);
 		} else {
-			System.out.println("Return null");
+			System.out.println("Did not find" + key + " in " + userBalances.toString() + ".");
 			return null/*userBalances.put(key, defaultBalance)*/;
 			
 		}
