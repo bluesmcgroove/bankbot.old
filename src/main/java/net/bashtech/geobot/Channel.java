@@ -1820,7 +1820,7 @@ public class Channel {
 		defaults.put("wpTimer", new Boolean(false));
 		defaults.put("wpCount", 0);
 		defaults.put("bullet", BotManager.getInstance().defaultBullet);
-		defaults.put("currency", BotManager.getInstance().defaultCurrency);
+		defaults.put("currencyName", BotManager.getInstance().defaultCurrency);
 		defaults.put("cooldown", 5);
 
 		defaults.put("maxViewers", 0);
