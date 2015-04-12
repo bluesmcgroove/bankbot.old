@@ -734,9 +734,9 @@ public class Channel {
 			balanceObj.put("balance", pairs.getValue());
 			
 			balanceArr.add(balanceObj);
-			config.put("userBalances", balanceArr);
-			saveConfig(shouldUpdate);
-			//saveCurrency(shouldUpdate);
+			balconfig.put("userBalances", balanceArr);
+			//saveConfig(shouldUpdate);
+			saveCurrency(shouldUpdate);
 			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
@@ -2171,21 +2171,14 @@ public class Channel {
 		
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
 
-		for (int i = 0; i < balanceArray.size(); i++) {
-			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			userBalances.put((String) balanceObject.get("key"),
-					(Long) balanceObject.get("balance"));
+				for (int i = 0; i < balanceArray.size(); i++) {
+					JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+					userBalances.put((String) balanceObject.get("key"),
+							(Long) balanceObject.get("balance"));
+
 					
 					saveBalance(false);
 					
-					
-		//JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
-
-		//for (int i = 0; i < balanceArray.size(); i++) {
-		//	JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-		//	userBalances.put((String) balanceObject.get("key"),
-		//			(Long) balanceObject.get("balance"));
-			
 		}
 		saveCurrency(true);
 		System.out.println("Printing userBalances " + userBalances.toString());
