@@ -275,10 +275,22 @@ public class Channel {
 		bullet = newBullet;
 		config.put("bullet", newBullet);
 		saveConfig(true);
-	}	
+	}
+
+	public void setCurrency(String newCurrency){
+		currency = newCurrency;
+		config.put("currency", newCurrency);
+		saveConfig(true);
+	}
+	
 	public String getChannelBullet() {
 		return bullet;
 	}
+	
+	public String getCurrency() {
+		return currency;
+	}
+
 	public void increaseWpCount() {
 		wpCount++;
 		config.put("wpCount", wpCount);
@@ -628,16 +640,16 @@ public class Channel {
 
 	
 	// Save balances to JSON
-	
 
 	public Long getBalance(String key) {
 		
 		key = key.toLowerCase();
+		
 		if (userBalances.containsKey(key)) {
 			System.out.println("Return balance from " + key + ".");
 			return userBalances.get(key);
 		} else {
-			System.out.println("Did not find " + key + " in " + userBalances.toString() + ".");
+			System.out.println("Did not find" + key + " in " + userBalances.toString() + ".");
 			return null/*userBalances.put(key, defaultBalance)*/;
 			
 		}
@@ -1847,23 +1859,23 @@ public class Channel {
 		saveConfig(false);
 	}
 	
-//	private void setBalanceDefaults() {
-//		balDefaults.put("userBalances", new JSONArray());
-//
-//		Iterator it = defaults.entrySet().iterator();
-//		while (it.hasNext()) {
-//			Map.Entry pairs = (Map.Entry) it.next();
-//			String key = String.valueOf(pairs.getKey());
-//			Object value = pairs.getValue();
-//			if (value instanceof Integer) {
-//				value = Integer.parseInt(String.valueOf(value)) * 1L;
-//			}
-//			if (!balconfig.containsKey(key))
-//				balconfig.put(key, value);
-//		}
-//		
-//		
-//	}
+	private void setBalanceDefaults() {
+		balDefaults.put("userBalances", new JSONArray());
+
+		Iterator it = defaults.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry) it.next();
+			String key = String.valueOf(pairs.getKey());
+			Object value = pairs.getValue();
+			if (value instanceof Integer) {
+				value = Integer.parseInt(String.valueOf(value)) * 1L;
+			}
+			if (!balconfig.containsKey(key))
+				balconfig.put(key, value);
+		}
+		
+		
+	}
 
 	private void loadProperties(String name) {
 
@@ -1899,6 +1911,7 @@ public class Channel {
 		wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
 		wpCount = ((Long) config.get("wpCount")).intValue();
 		bullet = (String) config.get("bullet");
+		currency = (String) config.get("curency");
 		cooldown = ((Long) config.get("cooldown")).intValue();
 		sincePunish = (Long) config.get("sincePunish");
 
@@ -2137,11 +2150,9 @@ public class Channel {
 		
 		System.out.println("Balances loaded from " + name);
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
-		//System.out.println(balanceArray.toString());
 
 		for (int i = 0; i < userBalances.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			System.out.println(balanceObject.get(i)); //test
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
 					
@@ -2274,7 +2285,8 @@ public class Channel {
 		}
 	}
 	
-	//Save currency balances?	
+	//Save currency balances?
+	
 	//Should be like saveConfig
 	  public void saveCurrency(Boolean shouldUpdate) {
 		try {

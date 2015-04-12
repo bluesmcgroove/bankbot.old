@@ -1632,33 +1632,33 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		
+		/*
+		// For debug purposes - Blues
+		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
+			if (msg.length < 2) {
+				send(channel, "Specify which balance file to load !loadbal [channel]");
+			} else {
+				String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
+				key = key.toLowerCase();
+				
+				channelInfo.loadBalances(key);
+				send(channel, sender + " loaded " + key + " balance file.");
+				
+			}
+			//send(channel, "Channel " + channel + "balances loaded.");
+			
+			return;
+		}
+
 		
-//		// For debug purposes - Blues
-//		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
-//			if (msg.length < 2) {
-//				send(channel, "Specify which balance file to load !loadbal [channel]");
-//			} else {
-//				String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
-//				key = key.toLowerCase();
-//				
-//				channelInfo.loadBalances(key);
-//				send(channel, sender + " loaded " + key + " balance file.");
-//				
-//			}
-//			send(channel, "Channel " + channel + "balances loaded.");
-//			
-//			return;
-//		}
-//
-//		
-//		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
-//			log("RB: Matched command !balance");
-//			channelInfo.saveBalance(true);
-//			send(channel, "Channel " + channel + "balances saved.");
-//			
-//			return;
-//		}
-		
+		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
+			log("RB: Matched command !balance");
+			channelInfo.saveBalance(true);
+			send(channel, "Channel " + channel + "balances saved.");
+			
+			return;
+		}
+		*/
 		
 		
 		// !currency - All
