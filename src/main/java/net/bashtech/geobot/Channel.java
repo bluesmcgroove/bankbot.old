@@ -81,7 +81,7 @@ public class Channel {
 	private String bullet = "#!";
 
 	private JSONObject defaults = new JSONObject();
-	//private JSONObject balDefaults = new JSONObject();
+	private JSONObject balDefaults = new JSONObject();
 
 	private int cooldown = 0;
 
@@ -124,7 +124,7 @@ public class Channel {
 		
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
-			//userBalances = (JSONObject) balobj;
+			
 			balconfig = (JSONObject) balobj;
 			System.out.println(balobj.toString());
 
@@ -139,7 +139,6 @@ public class Channel {
 		
 		loadProperties(name);
 		loadBalances(balname);
-		//System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
@@ -521,42 +520,8 @@ public class Channel {
 		}
 	}
 	
-	/*
-	 public String getCommand(String key) {
-		key = key.toLowerCase();
-
-		if (commands.containsKey(key)) {
-			return commands.get(key);
-		} else {
-			return null;
-		}
-	}
-	*/
 	
 	public void setBalance(String key, Long balance) {
-		
-		
-		/*
-		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
-		System.out.println("Key: " + key);
-		command = command.replaceAll(",,", "");
-
-		if (key.length() < 1)
-			return;
-
-		if (commands.containsKey(key)) {
-
-			commands.remove(key);
-			commandAdders.remove(key);
-			commands.put(key, command);
-			commandAdders.put(key, adder);
-
-		} else {
-			commands.put(key, command);
-			commandAdders.put(key, adder);
-			commandCounts.put(key, 0);
-		}
-		*/
 		
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		balance = balance.longValue();
@@ -587,8 +552,6 @@ public class Channel {
 		return false;
 	}
 
-
-	// Save balance reference?
 	
 	void saveBalance(boolean shouldUpdate) {
 		JSONArray balanceArr = new JSONArray();
@@ -602,45 +565,11 @@ public class Channel {
 			
 			balanceArr.add(balanceObj);
 			balconfig.put("userBalances", balanceArr);
-			//saveConfig(shouldUpdate);
 			saveCurrency(shouldUpdate);
-			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
 		
 	}
-	
-	/*
-		JSONArray commandsArr = new JSONArray();
-
-		Iterator itr = commands.entrySet().iterator();
-
-		while (itr.hasNext()) {
-			Map.Entry pairs = (Map.Entry) itr.next();
-			JSONObject commandObj = new JSONObject();
-			commandObj.put("key", pairs.getKey());
-			commandObj.put("value", pairs.getValue());
-			if (commandsRestrictions.containsKey(pairs.getKey())) {
-				commandObj.put("restriction",
-						commandsRestrictions.get(pairs.getKey()));
-			} else {
-				commandObj.put("restriction", 1);
-			}
-			if (commandAdders.containsKey(pairs.getKey())) {
-				commandObj.put("editor", commandAdders.get(pairs.getKey()));
-			} else
-				commandObj.put("editor", null);
-			commandObj.put("count", commandCounts.get(pairs.getKey()));
-			commandsArr.add(commandObj);
-
-		}
-
-		config.put("commands", commandsArr);
-		saveConfig(shouldSendUpdate);
-	}
-	*/
-	
-	//end reference
 	
 	//increase balance
 	
@@ -1346,9 +1275,6 @@ public class Channel {
 		defaults.put("maxViewersStream", 0);
 
 		defaults.put("updateDelay", 120);
-		
-		// User Balance JSONArray
-		defaults.put("userBalances", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1364,11 +1290,11 @@ public class Channel {
 		saveConfig(false);
 	}
 	
-	/*
+	
 	private void setBalanceDefaults() {
 		balDefaults.put("userBalances", new JSONArray());
 
-		Iterator it = defaults.entrySet().iterator();
+		Iterator it = balDefaults.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
 			String key = String.valueOf(pairs.getKey());
@@ -1382,7 +1308,7 @@ public class Channel {
 		
 		
 	}
-	*/
+	
 
 	private void loadProperties(String name) {
 
@@ -1576,31 +1502,6 @@ public class Channel {
 
 		}
 		
-		/*
-		System.out.println("Balances loaded from " + name);
-		JSONArray balanceArray = (JSONArray) config.get("userBalances");
-		
-		System.out.println("Printing balconfig " + userBalances.toString());
-
-		for (int i = 0; i < userBalances.size(); i++) {
-			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			userBalances.put((String) balanceObject.get("key"),
-					(Long) balanceObject.get("balance"));
-					
-					//saveCurrency(false);
-					saveBalance(false);
-		}
-		*/
-		
-		//JSONArray balanceArray = (JSONArray) config.get("userBalances");
-
-		//for (int i = 0; i < balanceArray.size(); i++) {
-		//	JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-		//	userBalances.put((String) balanceObject.get("key"),
-		//			(Long) balanceObject.get("balance"));
-
-		//}
-		
 		System.out.println(userBalances.toString());
 		
 		saveConfig(true);
@@ -1608,6 +1509,7 @@ public class Channel {
 	}
 	
 	private void loadBalances(String name){
+		setBalanceDefaults();
 		
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
 
@@ -1725,7 +1627,7 @@ public class Channel {
 			file.flush();
 			file.close();
 			if (shouldUpdate) {
-				BotManager.getInstance().postCoebotConfig(config.toJSONString(), jsonText);
+				BotManager.getInstance().postCoebotConfig(balconfig.toJSONString(), jsonText);
 			}
 
 		} catch (IOException e) {
