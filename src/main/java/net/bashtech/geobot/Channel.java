@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public JSONObject config;
-	//public JSONObject balconfig;
+	public JSONObject balconfig;
 
 	private String channel;
 	private String twitchname;
@@ -140,7 +140,7 @@ public class Channel {
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
-		//String balname = twitchname + "balances";
+		String balname = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -152,7 +152,7 @@ public class Channel {
 			config = new JSONObject();
 		}
 
-		/*
+		
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
 			//userBalances = (JSONObject) balobj;
@@ -165,11 +165,11 @@ public class Channel {
 			System.out.println("Generating new balance config for " + channel);
 			balconfig = new JSONObject();
 		}
-		*/ 
+		 
 		
 		
 		loadProperties(name);
-		//loadBalances(balname);
+		loadBalances(balname);
 		//System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
@@ -183,7 +183,7 @@ public class Channel {
 			
 		*/
 		//System.out.println("Load key 'bluesmcgroove' from balconfig");
-		Object key = "bluesmcgroove";
+		//Object key = "bluesmcgroove";
 		//System.out.println("balconfig for " + key + " " + balconfig.get(key));
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
@@ -736,6 +736,7 @@ public class Channel {
 			balanceArr.add(balanceObj);
 			config.put("userBalances", balanceArr);
 			saveConfig(shouldUpdate);
+			//saveCurrency(shouldUpdate);
 			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
@@ -2151,66 +2152,45 @@ public class Channel {
 		}
 		*/
 		
-		JSONArray balanceArray = (JSONArray) config.get("userBalances");
+		//JSONArray balanceArray = (JSONArray) config.get("userBalances");
 
-		for (int i = 0; i < balanceArray.size(); i++) {
-			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			userBalances.put((String) balanceObject.get("key"),
-					(Long) balanceObject.get("balance"));
-			/*
-			if (balanceObject.containsKey("restriction")) {
-				commandsRestrictions.put((String) balanceObject.get("key"),
-						((Long) balanceObject.get("restriction")).intValue());
-			}
-			*/
-			/*
-			if (commandObject.containsKey("count")
-					&& commandObject.get("count") != null) {
-				commandCounts.put((String) commandObject.get("key"),
-						((Long) commandObject.get("count")).intValue());
-			} else {
-				commandCounts.put((String) commandObject.get("key"), 0);
-			}
-			*/
-			/*
-			if (commandObject.containsKey("editor")
-					&& commandObject.get("editor") != null) {
-				commandAdders.put((String) commandObject.get("key"),
-						(String) commandObject.get("editor"));
-			} else {
-				commandAdders.put((String) commandObject.get("key"), null);
-			}
-			*/
+		//for (int i = 0; i < balanceArray.size(); i++) {
+		//	JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+		//	userBalances.put((String) balanceObject.get("key"),
+		//			(Long) balanceObject.get("balance"));
 
-		}
+		//}
 		
 		System.out.println(userBalances.toString());
 		
 		saveConfig(true);
 
 	}
-	/*
+	
 	private void loadBalances(String name){
 		
-		System.out.println("Balances loaded from " + name);
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
-		
-		System.out.println("Printing balconfig " + balconfig.toJSONString());
 
-		for (int i = 0; i < userBalances.size(); i++) {
+		for (int i = 0; i < balanceArray.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
 					
-					//saveCurrency(false);
 					saveBalance(false);
+					
+					
+		//JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+
+		//for (int i = 0; i < balanceArray.size(); i++) {
+		//	JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+		//	userBalances.put((String) balanceObject.get("key"),
+		//			(Long) balanceObject.get("balance"));
 			
 		}
 		saveCurrency(true);
-		//saveBalance(true);
 		System.out.println("Printing userBalances " + userBalances.toString());
 	}
-	*/
+	
 
 	public void setMode(int mode) {
 		this.mode = mode;
@@ -2308,7 +2288,7 @@ public class Channel {
 	}
 	
 	//Save currency balances?
-	/*
+	
 	//Should be like saveConfig
 	  public void saveCurrency(Boolean shouldUpdate) {
 		try {
@@ -2331,7 +2311,7 @@ public class Channel {
 		}
 		//System.out.println("Saving" + balconfig.toJSONString());
 	}
-	  */
+	  
 	
 	 
 
