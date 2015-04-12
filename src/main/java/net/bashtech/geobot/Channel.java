@@ -19,27 +19,19 @@
 package net.bashtech.geobot;
 
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Channel {
 	public JSONObject config;
@@ -142,7 +134,7 @@ public class Channel {
 	private boolean currencyEnabled = false;
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
 	//Figure out how to add balance hashmap
-	private HashMap<String, Long> userBalances = new ObjectMapper().readValue();
+	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
 	
 	public Channel(String name) {
 		channel = name;
