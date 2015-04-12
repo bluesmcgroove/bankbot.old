@@ -108,7 +108,7 @@ public class Channel {
 	private String bullet = "#!";
 
 	private JSONObject defaults = new JSONObject();
-	private JSONObject balDefaults = new JSONObject();
+	//private JSONObject balDefaults = new JSONObject();
 
 	private int cooldown = 0;
 
@@ -135,10 +135,12 @@ public class Channel {
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
 	//Figure out how to add balance hashmap
 	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
+	//private JSONArray userBalances = ;
 	
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
+		String balname = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -153,8 +155,9 @@ public class Channel {
 		
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
+			//userBalances = (JSONObject) balobj;
 			balconfig = (JSONObject) balobj;
-			
+			System.out.println(balobj.toString());
 
 
 		} catch (Exception e) {
@@ -162,9 +165,12 @@ public class Channel {
 			System.out.println("Generating new balance config for " + channel);
 			balconfig = new JSONObject();
 		}
+		 
 		
 		
 		loadProperties(name);
+		loadBalances(balname);
+		//System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
@@ -176,8 +182,9 @@ public class Channel {
 			catch (Exception e) {}	   
 			
 		*/
-		System.out.println("Load Balances");
-		System.out.println(balconfig.toJSONString());
+		//System.out.println("Load key 'bluesmcgroove' from balconfig");
+		//Object key = "bluesmcgroove";
+		//System.out.println("balconfig for " + key + " " + balconfig.get(key));
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
@@ -639,11 +646,11 @@ public class Channel {
 
 	public Long getBalance(String key) {
 		key = key.toLowerCase();
-		
+
 		if (userBalances.containsKey(key)) {
 			return userBalances.get(key);
 		} else {
-			return null/*userBalances.put(key, defaultBalance)*/;
+			return null;
 		}
 	}
 	
@@ -685,15 +692,14 @@ public class Channel {
 		*/
 		
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
-		System.out.println("User: " + key);
 		balance = balance.longValue();
+		System.out.println("Setting " + key + "balance to " + balance + ".");
 
 		if (key.length() < 1)
 			return;
 
 		if (userBalances.containsKey(key)) {
-
-			userBalances.remove(balance);
+			
 			userBalances.put(key, balance);
 
 		} else {
@@ -729,7 +735,9 @@ public class Channel {
 			
 			balanceArr.add(balanceObj);
 			balconfig.put("userBalances", balanceArr);
-			saveCurrency(true);
+			//saveConfig(shouldUpdate);
+			saveCurrency(shouldUpdate);
+			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
 		
@@ -1835,7 +1843,7 @@ public class Channel {
 		defaults.put("raidWhitelist", new JSONArray());
 		
 		// User Balance JSONArray
-		//defaults.put("userBalances", new JSONArray());
+		defaults.put("userBalances", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1851,6 +1859,7 @@ public class Channel {
 		saveConfig(false);
 	}
 	
+	/*
 	private void setBalanceDefaults() {
 		balDefaults.put("userBalances", new JSONArray());
 
@@ -1868,6 +1877,7 @@ public class Channel {
 		
 		
 	}
+	*/
 
 	private void loadProperties(String name) {
 
@@ -1982,7 +1992,7 @@ public class Channel {
 				raidWhitelist.add((String) raidWhitelistArray.get(i));
 			}
 		}
-		//TODO learn how to create array from command array? Line 1904
+		
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
 		for (int i = 0; i < commandsArray.size(); i++) {
@@ -2009,6 +2019,9 @@ public class Channel {
 			}
 
 		}
+		
+		System.out.println(commands.toString());
+		
 		saveCommands(false);
 
 		JSONArray repeatedCommandsArray = (JSONArray) config
@@ -2119,63 +2132,56 @@ public class Channel {
 
 				}
 			}
-		
-			// TODO Create JSONArray for user balances. Learn from Line 1766?
-			/*
-			JSONArray balanceArray = (JSONArray) config.get("userBalances");
-
-			for (int i = 0; i < userBalances.size(); i++) {
-				JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-				userBalances.put((String) balanceObject.get("name"),
-						(Long) balanceObject.get("balance"));
-				
-			}
-			*/
 			
 
 		}
-		saveConfig(true);
-
-	}
-	
-	private void loadBalances(String name){
-		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+		
+		/*
+		System.out.println("Balances loaded from " + name);
+		JSONArray balanceArray = (JSONArray) config.get("userBalances");
+		
+		System.out.println("Printing balconfig " + userBalances.toString());
 
 		for (int i = 0; i < userBalances.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
-			
-			/*
-			JSONArray commandsArray = (JSONArray) config.get("commands"); 
-			
-			for (int i = 0; i < commandsArray.size(); i++) {
-			JSONObject commandObject = (JSONObject) commandsArray.get(i);
-			commands.put((String) commandObject.get("key"),
-					(String) commandObject.get("value"));
-			if (commandObject.containsKey("restriction")) {
-				commandsRestrictions.put((String) commandObject.get("key"),
-						((Long) commandObject.get("restriction")).intValue());
-			}
-			if (commandObject.containsKey("count")
-					&& commandObject.get("count") != null) {
-				commandCounts.put((String) commandObject.get("key"),
-						((Long) commandObject.get("count")).intValue());
-			} else {
-				commandCounts.put((String) commandObject.get("key"), 0);
-			}
-			if (commandObject.containsKey("editor")
-					&& commandObject.get("editor") != null) {
-				commandAdders.put((String) commandObject.get("key"),
-						(String) commandObject.get("editor"));
-			} else {
-				commandAdders.put((String) commandObject.get("key"), null);
-			}
+					
+					//saveCurrency(false);
+					saveBalance(false);
+		}
+		*/
+		
+		//JSONArray balanceArray = (JSONArray) config.get("userBalances");
 
+		//for (int i = 0; i < balanceArray.size(); i++) {
+		//	JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+		//	userBalances.put((String) balanceObject.get("key"),
+		//			(Long) balanceObject.get("balance"));
+
+		//}
+		
+		System.out.println(userBalances.toString());
+		
+		saveConfig(true);
+
+	}
+	
+	private void loadBalances(String name){
+		
+		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+
+				for (int i = 0; i < balanceArray.size(); i++) {
+					JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+					userBalances.put((String) balanceObject.get("key"),
+							(Long) balanceObject.get("balance"));
+
+					
+					saveBalance(false);
+					
 		}
-			*/
-		}
-		saveCurrency(false);
+		saveCurrency(true);
+		System.out.println("Printing userBalances " + userBalances.toString());
 	}
 	
 
@@ -2290,13 +2296,15 @@ public class Channel {
 			file.flush();
 			file.close();
 			if (shouldUpdate) {
-				BotManager.getInstance().postCoebotConfig(balconfig.toJSONString(), jsonText);
+				BotManager.getInstance().postCoebotConfig(config.toJSONString(), jsonText);
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		//System.out.println("Saving" + balconfig.toJSONString());
 	}
+	  
 	
 	 
 
