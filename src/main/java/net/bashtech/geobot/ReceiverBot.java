@@ -1632,7 +1632,7 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		
-		/*
+		
 		// For debug purposes - Blues
 		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
 			if (msg.length < 2) {
@@ -1650,7 +1650,7 @@ public class ReceiverBot extends PircBot {
 			return;
 		}
 
-		
+		/*
 		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
 			log("RB: Matched command !balance");
 			channelInfo.saveBalance(true);

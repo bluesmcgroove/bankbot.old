@@ -19,19 +19,27 @@
 package net.bashtech.geobot;
 
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
 
 public class Channel {
 	public JSONObject config;
@@ -134,7 +142,7 @@ public class Channel {
 	private boolean currencyEnabled = false;
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
 	//Figure out how to add balance hashmap
-	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
+	private HashMap<String, Long> userBalances = new ObjectMapper().readValue();
 	
 	public Channel(String name) {
 		channel = name;
@@ -181,7 +189,7 @@ public class Channel {
 		*/
 		System.out.println("Load key 'bluesmcgroove' from balconfig");
 		Object key = "bluesmcgroove";
-		System.out.println(balconfig.get(key));
+		System.out.println("balconfig for " + key + " " + balconfig.get(key));
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
@@ -644,7 +652,6 @@ public class Channel {
 	public Long getBalance(String key) {
 		
 		key = key.toLowerCase();
-		
 		if (userBalances.containsKey(key)) {
 			System.out.println("Return balance from " + key + ".");
 			return userBalances.get(key);
@@ -736,8 +743,8 @@ public class Channel {
 			
 			balanceArr.add(balanceObj);
 			balconfig.put("userBalances", balanceArr);
-			saveCurrency(true);
-			System.out.println("Saving " + userBalances.toString());
+			saveCurrency(shouldUpdate);
+			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
 		
@@ -2146,10 +2153,11 @@ public class Channel {
 
 	}
 	
-	private void loadBalances(String name){
+	void loadBalances(String name){
 		
 		System.out.println("Balances loaded from " + name);
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+		System.out.println(userBalances.toString());
 
 		for (int i = 0; i < userBalances.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
@@ -2157,6 +2165,7 @@ public class Channel {
 					(Long) balanceObject.get("balance"));
 					
 					saveCurrency(false);
+					saveBalance(true);
 			/*
 			JSONArray commandsArray = (JSONArray) config.get("commands"); 
 			
@@ -2187,6 +2196,7 @@ public class Channel {
 			*/
 		}
 		saveCurrency(true);
+		saveBalance(true);
 	}
 	
 
@@ -2307,7 +2317,7 @@ public class Channel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Saving" + balconfig.toJSONString());
+		//System.out.println("Saving" + balconfig.toJSONString());
 	}
 	
 	 
