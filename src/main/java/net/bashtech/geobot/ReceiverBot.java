@@ -1632,7 +1632,7 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		
-		
+		/*
 		// For debug purposes - Blues
 		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
 			if (msg.length < 2) {
@@ -1649,7 +1649,7 @@ public class ReceiverBot extends PircBot {
 			
 			return;
 		}
-
+		*/
 		/*
 		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
 			log("RB: Matched command !balance");
@@ -1680,7 +1680,7 @@ public class ReceiverBot extends PircBot {
 					channelInfo.setBalance(key, balance);
 					
 					channelInfo.saveBalance(true);
-					channelInfo.saveCurrency(true);
+					channelInfo.saveConfig(true);
 
 					send(channel, key + " balance updated to " + balance + " " + currency + ".");
 

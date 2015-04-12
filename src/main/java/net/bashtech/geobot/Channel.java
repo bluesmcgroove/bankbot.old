@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public JSONObject config;
-	public JSONObject balconfig;
+	//public JSONObject balconfig;
 
 	private String channel;
 	private String twitchname;
@@ -108,7 +108,7 @@ public class Channel {
 	private String bullet = "#!";
 
 	private JSONObject defaults = new JSONObject();
-	private JSONObject balDefaults = new JSONObject();
+	//private JSONObject balDefaults = new JSONObject();
 
 	private int cooldown = 0;
 
@@ -135,11 +135,12 @@ public class Channel {
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
 	//Figure out how to add balance hashmap
 	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
+	//private JSONArray userBalances = ;
 	
 	public Channel(String name) {
 		channel = name;
 		twitchname = channel.substring(1);
-		String balname = twitchname + "balances";
+		//String balname = twitchname + "balances";
 		JSONParser parser = new JSONParser();
 		try {
 			Object obj = parser.parse(new FileReader(channel + ".json"));
@@ -151,11 +152,12 @@ public class Channel {
 			config = new JSONObject();
 		}
 
-		
+		/*
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
+			//userBalances = (JSONObject) balobj;
 			balconfig = (JSONObject) balobj;
-			
+			System.out.println(balobj.toString());
 
 
 		} catch (Exception e) {
@@ -163,11 +165,12 @@ public class Channel {
 			System.out.println("Generating new balance config for " + channel);
 			balconfig = new JSONObject();
 		}
+		*/ 
 		
 		
 		loadProperties(name);
-		loadBalances(balname);
-		System.out.println(balconfig.toJSONString());
+		//loadBalances(balname);
+		//System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
@@ -179,9 +182,9 @@ public class Channel {
 			catch (Exception e) {}	   
 			
 		*/
-		System.out.println("Load key 'bluesmcgroove' from balconfig");
+		//System.out.println("Load key 'bluesmcgroove' from balconfig");
 		Object key = "bluesmcgroove";
-		System.out.println("balconfig for " + key + " " + balconfig.get(key));
+		//System.out.println("balconfig for " + key + " " + balconfig.get(key));
 		
 		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
@@ -642,15 +645,12 @@ public class Channel {
 	// Save balances to JSON
 
 	public Long getBalance(String key) {
-		
 		key = key.toLowerCase();
+
 		if (userBalances.containsKey(key)) {
-			System.out.println("Return balance from " + key + ".");
 			return userBalances.get(key);
 		} else {
-			System.out.println("Did not find" + key + " in " + userBalances.toString() + ".");
-			return null/*userBalances.put(key, defaultBalance)*/;
-			
+			return null;
 		}
 	}
 	
@@ -734,8 +734,8 @@ public class Channel {
 			balanceObj.put("balance", pairs.getValue());
 			
 			balanceArr.add(balanceObj);
-			balconfig.put("userBalances", balanceArr);
-			saveCurrency(shouldUpdate);
+			config.put("userBalances", balanceArr);
+			saveConfig(shouldUpdate);
 			System.out.println("Saving from saveBalance() " + userBalances.toString());
 		}
 		
@@ -1842,7 +1842,7 @@ public class Channel {
 		defaults.put("raidWhitelist", new JSONArray());
 		
 		// User Balance JSONArray
-		//defaults.put("userBalances", new JSONArray());
+		defaults.put("userBalances", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1858,6 +1858,7 @@ public class Channel {
 		saveConfig(false);
 	}
 	
+	/*
 	private void setBalanceDefaults() {
 		balDefaults.put("userBalances", new JSONArray());
 
@@ -1875,6 +1876,7 @@ public class Channel {
 		
 		
 	}
+	*/
 
 	private void loadProperties(String name) {
 
@@ -2016,6 +2018,9 @@ public class Channel {
 			}
 
 		}
+		
+		System.out.println(commands.toString());
+		
 		saveCommands(false);
 
 		JSONArray repeatedCommandsArray = (JSONArray) config
@@ -2126,49 +2131,39 @@ public class Channel {
 
 				}
 			}
-		
-			// TODO Create JSONArray for user balances. Learn from Line 1766?
-			/*
-			JSONArray balanceArray = (JSONArray) config.get("userBalances");
-
-			for (int i = 0; i < userBalances.size(); i++) {
-				JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-				userBalances.put((String) balanceObject.get("name"),
-						(Long) balanceObject.get("balance"));
-				
-			}
-			*/
 			
 
 		}
-		saveConfig(true);
-
-	}
-	
-	void loadBalances(String name){
 		
+		/*
 		System.out.println("Balances loaded from " + name);
-		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
-		System.out.println(userBalances.toString());
+		JSONArray balanceArray = (JSONArray) config.get("userBalances");
+		
+		System.out.println("Printing balconfig " + userBalances.toString());
 
 		for (int i = 0; i < userBalances.size(); i++) {
 			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
 			userBalances.put((String) balanceObject.get("key"),
 					(Long) balanceObject.get("balance"));
 					
-					saveCurrency(false);
-					saveBalance(true);
+					//saveCurrency(false);
+					saveBalance(false);
+		}
+		*/
+		
+		JSONArray balanceArray = (JSONArray) config.get("userBalances");
+
+		for (int i = 0; i < balanceArray.size(); i++) {
+			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+			userBalances.put((String) balanceObject.get("key"),
+					(Long) balanceObject.get("balance"));
 			/*
-			JSONArray commandsArray = (JSONArray) config.get("commands"); 
-			
-			for (int i = 0; i < commandsArray.size(); i++) {
-			JSONObject commandObject = (JSONObject) commandsArray.get(i);
-			commands.put((String) commandObject.get("key"),
-					(String) commandObject.get("value"));
-			if (commandObject.containsKey("restriction")) {
-				commandsRestrictions.put((String) commandObject.get("key"),
-						((Long) commandObject.get("restriction")).intValue());
+			if (balanceObject.containsKey("restriction")) {
+				commandsRestrictions.put((String) balanceObject.get("key"),
+						((Long) balanceObject.get("restriction")).intValue());
 			}
+			*/
+			/*
 			if (commandObject.containsKey("count")
 					&& commandObject.get("count") != null) {
 				commandCounts.put((String) commandObject.get("key"),
@@ -2176,6 +2171,8 @@ public class Channel {
 			} else {
 				commandCounts.put((String) commandObject.get("key"), 0);
 			}
+			*/
+			/*
 			if (commandObject.containsKey("editor")
 					&& commandObject.get("editor") != null) {
 				commandAdders.put((String) commandObject.get("key"),
@@ -2183,14 +2180,37 @@ public class Channel {
 			} else {
 				commandAdders.put((String) commandObject.get("key"), null);
 			}
+			*/
 
 		}
-			*/
+		
+		System.out.println(userBalances.toString());
+		
+		saveConfig(true);
+
+	}
+	/*
+	private void loadBalances(String name){
+		
+		System.out.println("Balances loaded from " + name);
+		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
+		
+		System.out.println("Printing balconfig " + balconfig.toJSONString());
+
+		for (int i = 0; i < userBalances.size(); i++) {
+			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+			userBalances.put((String) balanceObject.get("key"),
+					(Long) balanceObject.get("balance"));
+					
+					//saveCurrency(false);
+					saveBalance(false);
+			
 		}
 		saveCurrency(true);
-		saveBalance(true);
+		//saveBalance(true);
+		System.out.println("Printing userBalances " + userBalances.toString());
 	}
-	
+	*/
 
 	public void setMode(int mode) {
 		this.mode = mode;
@@ -2288,7 +2308,7 @@ public class Channel {
 	}
 	
 	//Save currency balances?
-	
+	/*
 	//Should be like saveConfig
 	  public void saveCurrency(Boolean shouldUpdate) {
 		try {
@@ -2303,7 +2323,7 @@ public class Channel {
 			file.flush();
 			file.close();
 			if (shouldUpdate) {
-				BotManager.getInstance().postCoebotConfig(balconfig.toJSONString(), jsonText);
+				BotManager.getInstance().postCoebotConfig(config.toJSONString(), jsonText);
 			}
 
 		} catch (IOException e) {
@@ -2311,6 +2331,7 @@ public class Channel {
 		}
 		//System.out.println("Saving" + balconfig.toJSONString());
 	}
+	  */
 	
 	 
 
