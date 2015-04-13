@@ -1058,9 +1058,9 @@ public class ReceiverBot extends PircBot {
 				key = key.toLowerCase();
 				Long balance = Long.valueOf(msg[2]);
 				
-				channelInfo.decreaseBalance(sender, balance);
-				channelInfo.increaseBalance(key, balance);
-				send(channel, sender + " tipped " + balance + " " + currency + " to " + key + ".");
+				long bal = channelInfo.decreaseBalance(sender, balance);
+				channelInfo.increaseBalance(key, bal);
+				send(channel, sender + " tipped " + bal + " " + currency + " to " + key + ".");
 				
 			}
 		}
