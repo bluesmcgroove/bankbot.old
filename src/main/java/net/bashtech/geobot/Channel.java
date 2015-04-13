@@ -1240,21 +1240,21 @@ public class Channel {
 		// defaults.put("channel", channel);
 		defaults.put("ignoredUsers", new JSONArray());
 		defaults.put("currencyEnabled", true);
-		defaults.put("subsRegsMinusLinks", new Boolean(false));
-		defaults.put("filterCaps", new Boolean(false));
-		defaults.put("filterOffensive", new Boolean(true));
-		defaults.put("filterCapsPercent", 50);
-		defaults.put("filterCapsMinCharacters", 0);
-		defaults.put("filterCapsMinCapitals", 6);
-		defaults.put("filterLinks", new Boolean(false));
-		defaults.put("filterEmotes", new Boolean(false));
-		defaults.put("filterSymbols", new Boolean(false));
-		defaults.put("filterEmotesMax", 4);
+		//defaults.put("subsRegsMinusLinks", new Boolean(false));
+		//defaults.put("filterCaps", new Boolean(false));
+		//defaults.put("filterOffensive", new Boolean(true));
+		//defaults.put("filterCapsPercent", 50);
+		//defaults.put("filterCapsMinCharacters", 0);
+		//defaults.put("filterCapsMinCapitals", 6);
+		//defaults.put("filterLinks", new Boolean(false));
+		//defaults.put("filterEmotes", new Boolean(false));
+		//defaults.put("filterSymbols", new Boolean(false));
+		//defaults.put("filterEmotesMax", 4);
 
-		defaults.put("punishCount", 0);
-		defaults.put("sincePunish", sincePunish);
-		defaults.put("sinceWp", System.currentTimeMillis());
-		defaults.put("maxviewerDate", "");
+		//defaults.put("punishCount", 0);
+		//defaults.put("sincePunish", sincePunish);
+		//defaults.put("sinceWp", System.currentTimeMillis());
+		//defaults.put("maxviewerDate", "");
 
 		defaults.put("commands", new JSONArray());
 
@@ -1266,20 +1266,20 @@ public class Channel {
 		defaults.put("owners", new JSONArray());
 		defaults.put("permittedDomains", new JSONArray());
 		defaults.put("signKicks", new Boolean(false));
-		defaults.put("topicTime", 0);
+		//defaults.put("topicTime", 0);
 		defaults.put("mode", 2);
 		defaults.put("announceJoinParts", new Boolean(false));
 		defaults.put("logChat", new Boolean(false));
-		defaults.put("offensiveWords", new JSONArray());
+		//defaults.put("offensiveWords", new JSONArray());
 		defaults.put("staticChannel", new Boolean(false));
 		defaults.put("commandPrefix", "!");
 
 		defaults.put("emoteSet", "");
-		defaults.put("subscriberRegulars", new Boolean(false));
-		defaults.put("banPhraseSeverity", 99);
+		//defaults.put("subscriberRegulars", new Boolean(false));
+		//defaults.put("banPhraseSeverity", 99);
 
-		defaults.put("wpTimer", new Boolean(false));
-		defaults.put("wpCount", 0);
+		//defaults.put("wpTimer", new Boolean(false));
+		//defaults.put("wpCount", 0);
 		defaults.put("bullet", BotManager.getInstance().defaultBullet);
 		defaults.put("currencyName", BotManager.getInstance().defaultCurrency);
 		defaults.put("cooldown", 5);
@@ -1330,50 +1330,50 @@ public class Channel {
 
 		setDefaults();
 
-		urbanEnabled = Boolean.valueOf((Boolean) config.get("urbanEnabled"));
+		//urbanEnabled = Boolean.valueOf((Boolean) config.get("urbanEnabled"));
 		currencyEnabled = Boolean.valueOf((Boolean) config.get("currencyEnabled"));
 		// channel = config.getString("channel");
 
-		subsRegsMinusLinks = Boolean.valueOf((Boolean) config
-				.get("subsRegsMinusLinks"));
-		updateDelay = ((Long) config.get("updateDelay")).intValue();
-		punishCount = ((Long) config.get("punishCount")).intValue();
-		streamAlive = (Boolean) config.get("streamAlive");
-		sinceWp = ((Long) config.get("sinceWp"));
-		maxviewerDate = (String) config.get("maxviewerDate");
+		//subsRegsMinusLinks = Boolean.valueOf((Boolean) config
+		//		.get("subsRegsMinusLinks"));
+		//updateDelay = ((Long) config.get("updateDelay")).intValue();
+		//punishCount = ((Long) config.get("punishCount")).intValue();
+		//streamAlive = (Boolean) config.get("streamAlive");
+		//sinceWp = ((Long) config.get("sinceWp"));
+		//maxviewerDate = (String) config.get("maxviewerDate");
 		runningMaxViewers = ((Long) config.get("runningMaxViewers")).intValue();
-		streamNumber = ((Long) config.get("streamCount")).intValue();
+		//streamNumber = ((Long) config.get("streamCount")).intValue();
 		streamMax = ((Long) config.get("maxViewersStream")).intValue();
 		maxViewers = ((Long) config.get("maxViewers")).intValue();
 
-		wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
-		wpCount = ((Long) config.get("wpCount")).intValue();
+		//wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
+		//wpCount = ((Long) config.get("wpCount")).intValue();
 		bullet = (String) config.get("bullet");
 		currency = (String) config.get("curency");
 		cooldown = ((Long) config.get("cooldown")).intValue();
-		sincePunish = (Long) config.get("sincePunish");
+		//sincePunish = (Long) config.get("sincePunish");
 		// announceJoinParts =
 		// Boolean.parseBoolean(config.getString("announceJoinParts"));
-		announceJoinParts = false;
-		signKicks = Boolean.valueOf((Boolean) config.get("signKicks"));
+		//announceJoinParts = false;
+		//signKicks = Boolean.valueOf((Boolean) config.get("signKicks"));
 		logChat = Boolean.valueOf((Boolean) config.get("logChat"));
 		mode = ((Long) config.get("mode")).intValue();
-		filterColors = Boolean.valueOf((Boolean) config.get("filterColors"));
-		filterMe = Boolean.valueOf((Boolean) config.get("filterMe"));
+		//filterColors = Boolean.valueOf((Boolean) config.get("filterColors"));
+		//filterMe = Boolean.valueOf((Boolean) config.get("filterMe"));
 		staticChannel = Boolean.valueOf((Boolean) config.get("staticChannel"));
 		timeoutDuration = ((Long) config.get("timeoutDuration")).intValue();
 		prefix = (String) config.get("commandPrefix");
 		currency = (String) config.get("currencyName") ;
 		emoteSet = (String) config.get("emoteSet");
-		subscriberRegulars = Boolean.valueOf((Boolean) config
-				.get("subscriberRegulars"));
+		//subscriberRegulars = Boolean.valueOf((Boolean) config
+		//		.get("subscriberRegulars"));
 
 		// timeAliveStart = (Long)config.get("timeAliveStart");
 
-		JSONArray jsonignoredUsers = (JSONArray) config.get("ignoredUsers");
-		for (int i = 0; i < jsonignoredUsers.size(); i++) {
-			ignoredUsers.add((String) jsonignoredUsers.get(i));
-		}
+		//JSONArray jsonignoredUsers = (JSONArray) config.get("ignoredUsers");
+		//for (int i = 0; i < jsonignoredUsers.size(); i++) {
+		//	ignoredUsers.add((String) jsonignoredUsers.get(i));
+		//}
 		
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
@@ -1492,31 +1492,31 @@ public class Channel {
 			}
 		}
 
-		JSONArray offensiveArray = (JSONArray) config.get("offensiveWords");
+		//JSONArray offensiveArray = (JSONArray) config.get("offensiveWords");
 
-		synchronized (offensiveWords) {
-			synchronized (offensiveWordsRegex) {
-				for (int i = 0; i < offensiveArray.size(); i++) {
+		//synchronized (offensiveWords) {
+		//	synchronized (offensiveWordsRegex) {
+		//		for (int i = 0; i < offensiveArray.size(); i++) {
 
-					String w = (String) offensiveArray.get(i);
-					offensiveWords.add(w);
-					if (w.startsWith("REGEX:")) {
-						String line = w.substring(6);
-						System.out.println("Adding: " + line);
-						Pattern tempP = Pattern.compile(line);
-						offensiveWordsRegex.add(tempP);
-					} else {
-						String line = "(?i).*" + Pattern.quote(w) + ".*";
-						System.out.println("Adding: " + line);
-						Pattern tempP = Pattern.compile(line);
-						offensiveWordsRegex.add(tempP);
-					}
+		//			String w = (String) offensiveArray.get(i);
+		//			offensiveWords.add(w);
+		//			if (w.startsWith("REGEX:")) {
+		//				String line = w.substring(6);
+		//				System.out.println("Adding: " + line);
+		//				Pattern tempP = Pattern.compile(line);
+		//				offensiveWordsRegex.add(tempP);
+		//			} else {
+		//				String line = "(?i).*" + Pattern.quote(w) + ".*";
+		//				System.out.println("Adding: " + line);
+		//				Pattern tempP = Pattern.compile(line);
+		//				offensiveWordsRegex.add(tempP);
+		//			}
 
-				}
-			}
+		//		}
+		//	}
 			
 
-		}
+		//}
 		
 		System.out.println(userBalances.toString());
 		
