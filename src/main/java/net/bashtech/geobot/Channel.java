@@ -580,21 +580,37 @@ public class Channel {
 			long summedBalance = Math.addExact(currentBalance, incBal);
 			userBalances.put(key, summedBalance);
 			saveBalance(true);
+		} else {
+			long summedBalance = Math.addExact(defaultBalance, incBal);
+			userBalances.put(key, summedBalance);
 		}
 		saveBalance(false);
 
 	}
 	
 	//decrease balance
-	public void decreaseBalance(String key, Long decBal) {
+	public long decreaseBalance(String key, Long decBal) {
 		key = key.toLowerCase();
+		long subtrBalance;
 		if (userBalances.containsKey(key)) {
 			long currentBalance = userBalances.get(key);
-			long subtrBalance = Math.subtractExact(currentBalance, decBal);
+			if (currentBalance >= decBal) {
+				subtrBalance = Math.subtractExact(currentBalance, decBal);
+				userBalances.put(key, subtrBalance);
+				saveBalance(true);
+				return decBal;
+			}
+			else {
+				subtrBalance = userBalances.get(key);
+				userBalances.put(key, (long) 0);
+				return subtrBalance;
+			}
+		} else {
+			subtrBalance = Math.subtractExact(defaultBalance, decBal);
 			userBalances.put(key, subtrBalance);
 			saveBalance(true);
+			return subtrBalance;
 		}
-		saveBalance(false);
 
 	}
 	

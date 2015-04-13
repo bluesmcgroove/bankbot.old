@@ -1042,7 +1042,13 @@ public class ReceiverBot extends PircBot {
 				}
 			}
 			return;
-		}		
+		}	
+		
+		// ********************************************************************************
+		// ********************************* Currency and Balance Commands
+		// *************************************
+		// ********************************************************************************
+		
 		// !tip
 		if (msg[0].equalsIgnoreCase(prefix + "tip")) {
 			if (msg.length < 3) {
@@ -1052,9 +1058,9 @@ public class ReceiverBot extends PircBot {
 				key = key.toLowerCase();
 				Long balance = Long.valueOf(msg[2]);
 				
-				channelInfo.decreaseBalance(sender, balance);
-				channelInfo.increaseBalance(key, balance);
-				send(channel, sender + " tipped " + balance + " " + currency + " to " + key + ".");
+				long bal = channelInfo.decreaseBalance(sender, balance);
+				channelInfo.increaseBalance(key, bal);
+				send(channel, sender + " tipped " + bal + " " + currency + " to " + key + ".");
 				
 			}
 		}
@@ -1066,36 +1072,56 @@ public class ReceiverBot extends PircBot {
 			
 			return;
 		}
-		
-		
-		/*
-		// For debug purposes - Blues
-		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
-			if (msg.length < 2) {
-				send(channel, "Specify which balance file to load !loadbal [channel]");
-			} else {
-				String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
-				key = key.toLowerCase();
-				
-				channelInfo.loadBalances(key);
-				send(channel, sender + " loaded " + key + " balance file.");
-				
+		// !bet
+		// !bet set [options]
+		// !bet [options] [amount]
+		// !bet winner [options]
+		// !bet clear
+		if ((msg[0].equalsIgnoreCase(prefix + "bet"))) {
+			log("RB: Matched command !bet");
+			
+			if (msg.length < 2 && isOp) {
+				send(channel,
+						"Syntax: \"!bet set/winner/clear [options]\" - Options is something like 'yes/no/maybe' for set and 'yes'/'no'/'maybe' for winner.");
+			} else if (msg.length < 2) {
+				send(channel,
+						"Syntax: \"!bet [option] [number]\" - Option is the option you want to choose and Number is the amount you want to bet.");
+			} else if (msg.length > 2) {
+				if (msg[1].equalsIgnoreCase("set") && isOp) {
+					// !bet set [options]
+					String key = msg[2].replaceAll("[^a-zA-z0-9]", "");
+					
+					send(channel,"This command does nothing yet, try again later.");
+					
+//					channelInfo.setBet(key);
+//					send(channel,"Bet created with the options " + key + " use \"!bet [option] [amount]\" to enter your bet.");
+				} else if (msg[1].equalsIgnoreCase("winner") || msg[1].equalsIgnoreCase("win") && isOp) { 
+					// !bet winner [options]
+					String key = msg[2].replaceAll("[^a-zA-z0-9]", "");
+					
+					send(channel,"This command does nothing yet, try again later.");
+					
+//					String winners = channelInfo.getBetWinners(key);
+//					Long betWin = channelInfo.getBetWinAmount(key);
+//					send(channel, "The following people have been given " + betWin + " for winning the bet: " + winners);
+				} else if (msg[1].equalsIgnoreCase("clear") && isOp) {
+					send(channel,"This command does nothing yet, try again later.");
+					
+//					channelInfo.clearBet();
+//					send(channel, "The most recent bet has been cleared."
+				} else { 
+					// !bet [options] [amount]
+					String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
+					Long balance = Long.valueOf(msg[2]);
+					
+					send(channel,"This command does nothing yet, try again later.");
+					
+//					channelInfo.enterBet(sender, key, balance);
+//					channelInfo.increaseBalance("citizensbankbet", balance);
+//					channelInfo.decreaseBalance(sender, balance);
+				}
 			}
-			//send(channel, "Channel " + channel + "balances loaded.");
-			
-			return;
 		}
-		*/
-		/*
-		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
-			log("RB: Matched command !balance");
-			channelInfo.saveBalance(true);
-			send(channel, "Channel " + channel + "balances saved.");
-			
-			return;
-		}
-		*/
-		
 		
 		// !currency - Ops
 		if ((msg[0].equalsIgnoreCase(prefix + "currency")) || 
@@ -1115,8 +1141,8 @@ public class ReceiverBot extends PircBot {
 
 					channelInfo.setBalance(key, balance);
 					
-					channelInfo.saveBalance(true);
-					channelInfo.saveConfig(true);
+//					channelInfo.saveBalance(true);
+//					channelInfo.saveConfig(true);
 
 					send(channel, key + " balance updated to " + balance + " " + currency + ".");
 
@@ -1157,6 +1183,33 @@ public class ReceiverBot extends PircBot {
 			}
 			return;
 		}
+		/*
+		// For debug purposes - Blues
+		if ((msg[0].equalsIgnoreCase(prefix + "loadbal")) && isOp) {
+			if (msg.length < 2) {
+				send(channel, "Specify which balance file to load !loadbal [channel]");
+			} else {
+				String key = msg[1].replaceAll("[^a-zA-z0-9]", "");
+				key = key.toLowerCase();
+				
+				channelInfo.loadBalances(key);
+				send(channel, sender + " loaded " + key + " balance file.");
+				
+			}
+			//send(channel, "Channel " + channel + "balances loaded.");
+			
+			return;
+		}
+		*/
+		/*
+		if ((msg[0].equalsIgnoreCase(prefix + "savebal")) && isOp) {
+			log("RB: Matched command !balance");
+			channelInfo.saveBalance(true);
+			send(channel, "Channel " + channel + "balances saved.");
+			
+			return;
+		}
+		*/
 		
 		
 		// !repeat - Ops
