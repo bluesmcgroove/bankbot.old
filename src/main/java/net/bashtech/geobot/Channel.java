@@ -598,7 +598,7 @@ public class Channel {
 				subtrBalance = Math.subtractExact(currentBalance, decBal);
 				userBalances.put(key, subtrBalance);
 				saveBalance(true);
-				return subtrBalance;
+				return decBal;
 			}
 			else {
 				subtrBalance = userBalances.get(key);
