@@ -1097,7 +1097,7 @@ public class ReceiverBot extends PircBot {
 		*/
 		
 		
-		// !currency - All
+		// !currency - Ops
 		if ((msg[0].equalsIgnoreCase(prefix + "currency")) || 
 			(msg[0].equalsIgnoreCase(prefix + "curr")) || 
 			(msg[0].equalsIgnoreCase(prefix + "cur"))) {

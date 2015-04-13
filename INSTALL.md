@@ -4,11 +4,11 @@
 
 Downloading source code (Source access currently unavailable but will be back soon.)
 
-    git clone git@bitbucket.org:bashtech/geobot.git
+    git clone https://github.com/bluesmcgroove/bankbot.git
 
 Compile with maven
 
-    cd GeoBot
+    cd BankBot
 
     mvn install
 
@@ -24,7 +24,7 @@ Install [JSON Simple](http://bashtech.net/twitch/ackbot/json-simple-1.1.jar) to 
 
 The bot can be run from console with the command:
 
-    java -jar Geobot.jar
+    java -jar BankBot.jar
 
 or double click the Jar to open the logging GUI.
 
@@ -46,3 +46,9 @@ After that property is set the bot should now join your channel.
 Also, note that all toggle-able features are off by default. You must use
 the `!set` command to enable them. This includes topic,
 filters, etc.
+
+
+To get your oauth token, log into the twitch account you want the bot to run under, then go to 
+[this link](http://twitchapps.com/tmi/&scope=chat_login+user_read+user_blocks_edit+user_blocks_read+user_follows_edit+channel_read+channel_editor+channel_commercial+channel_subscriptions+user_subscriptions+channel_check_subscription).
+
+Once you get that code, copy everything _including oauth:_ into the properties file under `krakenOAuthToken=` and `password=`
