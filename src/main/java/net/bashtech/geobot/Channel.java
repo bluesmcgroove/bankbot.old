@@ -580,6 +580,9 @@ public class Channel {
 			long summedBalance = Math.addExact(currentBalance, incBal);
 			userBalances.put(key, summedBalance);
 			saveBalance(true);
+		} else {
+			long summedBalance = Math.addExact(defaultBalance, incBal);
+			userBalances.put(key, summedBalance);
 		}
 		saveBalance(false);
 
@@ -593,6 +596,9 @@ public class Channel {
 			long subtrBalance = Math.subtractExact(currentBalance, decBal);
 			userBalances.put(key, subtrBalance);
 			saveBalance(true);
+		} else {
+			long subtrBalance = Math.subtractExact(defaultBalance, decBal);
+			userBalances.put(key, subtrBalance);
 		}
 		saveBalance(false);
 
