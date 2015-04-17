@@ -730,13 +730,10 @@ public class Channel {
 		key = key.toLowerCase();
 
 		if (userBalances.containsKey(key)) {
-					userBalances.get(key);
+			return userBalances.get(key);
 		} else {
-					userBalances.put(key, defaultBalance);
-					saveBalance(true);
-			
+			return null;
 		}
-		return null;
 	}
 	
 	
@@ -826,23 +823,15 @@ public class Channel {
 			else {
 				subtrBalance = userBalances.get(key);
 				userBalances.put(key, (long) 0);
-				saveBalance(true);
 				return subtrBalance;
 			}
 		} else {
-			if (defaultBalance >= decBal) {
-				subtrBalance = Math.subtractExact(defaultBalance, decBal);
-				userBalances.put(key, subtrBalance);
-				saveBalance(true);
-				return decBal;
-			} else {
-				subtrBalance = userBalances.get(key);
-				userBalances.put(key, (long) 0);
-				saveBalance(true);
-				return subtrBalance;
-			}
+			subtrBalance = Math.subtractExact(defaultBalance, decBal);
+			userBalances.put(key, subtrBalance);
+			saveBalance(true);
+			return subtrBalance;
 		}
- 
+
 	}
 	
 	public void setScheduledCommand(String key, String pattern, int diff) {
