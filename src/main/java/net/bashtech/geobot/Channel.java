@@ -45,39 +45,17 @@ public class Channel {
 	private HashMap<String, Integer> commandsRestrictions = new HashMap<String, Integer>();
 	private HashMap<String, Integer> commandCounts = new HashMap<String, Integer>();
 	private HashMap<String, String> commandAdders = new HashMap<String, String>();
-	private ArrayList<String> quotes = new ArrayList<String>();
-	private HashMap<String, String> quoteAdders = new HashMap<String, String>();
-	private HashMap<String, Long> quoteTimestamps = new HashMap<String, Long>();
 	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
 	HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
 	List<Pattern> autoReplyTrigger = new ArrayList<Pattern>();
 	List<String> autoReplyResponse = new ArrayList<String>();
-	private boolean filterCaps;
-	private int filterCapsPercent;
-	private int filterCapsMinCharacters;
-	private int filterCapsMinCapitals;
-	private boolean filterLinks;
-	private boolean filterOffensive;
-	private boolean filterEmotes;
-	private boolean filterSymbols;
-	private int filterSymbolsPercent;
-	private int filterSymbolsMin;
-	private int filterEmotesMax;
-	private boolean filterEmotesSingle;
-	private int filterMaxLength;
-	private String topic;
-	private int topicTime;
 	private Set<String> regulars = new HashSet<String>();
 	// private Set<String> subscribers = new HashSet<String>();
 	private Set<String> moderators = new HashSet<String>();
 	Set<String> tagModerators = new HashSet<String>();
 	private Set<String> owners = new HashSet<String>();
-	private Set<String> raidWhitelist = new HashSet<String>();
 	private Set<String> permittedUsers = new HashSet<String>();
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
-	public boolean useTopic = true;
-	public boolean useFilters = true;
-	private boolean enableThrow;
 	private boolean signKicks;
 	private boolean announceJoinParts;
 	private int mode; // 0: Admin/owner only; 1: Mod Only; 2: Everyone; -1
@@ -85,17 +63,12 @@ public class Channel {
 
 	public boolean logChat;
 	public long messageCount;
-	public int commercialLength;
-	String clickToTweetFormat;
 	private boolean filterColors;
 	private boolean filterMe;
 	public static long defaultBalance = 1000;
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
-	Map<String, EnumMap<FilterType, Integer>> warningCount;
-	Map<String, Long> warningTime;
 	private int timeoutDuration;
-	private boolean enableWarnings;
 	Map<String, Long> commandCooldown;
 	
 	String prefix;
@@ -127,13 +100,10 @@ public class Channel {
 	public boolean subsRegsMinusLinks;
 
 	public boolean active;
-	private int lastStrawpoll;
-	// private long timeAliveStart = System.currentTimeMillis();
 	private boolean streamAlive = false;
 	private boolean urbanEnabled = false;
 	private boolean currencyEnabled = false;
 	private ArrayList<String> ignoredUsers = new ArrayList<String>();
-	//Figure out how to add balance hashmap
 	private HashMap<String, Long> userBalances = new HashMap<String, Long>();
 	
 	public Channel(String name) {
@@ -422,90 +392,6 @@ public class Channel {
 			return -1;
 	}
 
-	// ################################################################
-	
-	public int addQuote(String quote, String editor) {
-
-		if (quotes.contains(quote)) {
-			return -1;
-		} else {
-			quotes.add(quote);
-			quoteAdders.put(quote, editor);
-			quoteTimestamps.put(quote, System.currentTimeMillis());
-
-			saveQuotes(true);
-			return quotes.indexOf(quote);
-		}
-	}
-
-	public void saveQuotes(boolean shouldSendUpdate) {
-		JSONArray quotesArray = new JSONArray();
-
-		for (int i = 0; i < quotes.size(); i++) {
-			JSONObject quoteObj = new JSONObject();
-			quoteObj.put("quote", quotes.get(i));
-			if (quoteAdders.containsKey(quotes.get(i))) {
-				quoteObj.put("editor", quoteAdders.get(quotes.get(i)));
-			} else
-				quoteObj.put("editor", null);
-			if (quoteTimestamps.containsKey(quotes.get(i))) {
-				quoteObj.put("timestamp", quoteTimestamps.get(quotes.get(i)));
-			} else
-				quoteObj.put("timestamp", null);
-
-			quotesArray.add(quoteObj);
-		}
-		config.put("quotes", quotesArray);
-		saveConfig(shouldSendUpdate);
-	}
-
-	public int getQuoteSize() {
-		return quotes.size();
-	}
-
-	public String getQuote(int index) {
-		if (index < quotes.size())
-			return quotes.get(index);
-		else
-			return "No quote at requested index.";
-	}
-	public boolean editQuote(int index, String newQuote,String editor){
-		if (index > quotes.size() - 1)
-			return false;
-		String oldquote = quotes.get(index);
-		quoteAdders.remove(oldquote);
-		quoteTimestamps.remove(oldquote);
-		quoteAdders.put(newQuote, editor);
-		quoteTimestamps.put(newQuote, System.currentTimeMillis());
-		quotes.remove(index);
-		quotes.add(index, newQuote);
-
-		saveQuotes(true);
-
-		return true;
-		
-		
-	}
-
-	public boolean deleteQuote(int index) {
-		if (index > quotes.size() - 1)
-			return false;
-		else {
-			quotes.remove(index);
-
-			saveQuotes(true);
-			return true;
-		}
-	}
-
-	public int getQuoteIndex(String quote) {
-		if (quotes.contains(quote))
-			return quotes.indexOf(quote);
-		else
-			return -1;
-	}
-	
-	
 	// ################################################################
 	public String getCommand(String key) {
 		key = key.toLowerCase();
@@ -1802,26 +1688,23 @@ public class Channel {
 
 		// defaults.put("channel", channel);
 		defaults.put("ignoredUsers", new JSONArray());
-		defaults.put("urbanEnabled", true);
 		defaults.put("currencyEnabled", true);
-		defaults.put("extraLifeID", 0);
-		defaults.put("subsRegsMinusLinks", new Boolean(false));
-		defaults.put("filterCaps", new Boolean(false));
-		defaults.put("filterOffensive", new Boolean(true));
-		defaults.put("filterCapsPercent", 50);
-		defaults.put("filterCapsMinCharacters", 0);
-		defaults.put("filterCapsMinCapitals", 6);
-		defaults.put("filterLinks", new Boolean(false));
-		defaults.put("filterEmotes", new Boolean(false));
-		defaults.put("filterSymbols", new Boolean(false));
-		defaults.put("filterEmotesMax", 4);
+		//defaults.put("subsRegsMinusLinks", new Boolean(false));
+		//defaults.put("filterCaps", new Boolean(false));
+		//defaults.put("filterOffensive", new Boolean(true));
+		//defaults.put("filterCapsPercent", 50);
+		//defaults.put("filterCapsMinCharacters", 0);
+		//defaults.put("filterCapsMinCapitals", 6);
+		//defaults.put("filterLinks", new Boolean(false));
+		//defaults.put("filterEmotes", new Boolean(false));
+		//defaults.put("filterSymbols", new Boolean(false));
+		//defaults.put("filterEmotesMax", 4);
 
-		defaults.put("punishCount", 0);
-		defaults.put("sincePunish", sincePunish);
-		defaults.put("sinceWp", System.currentTimeMillis());
-		defaults.put("maxviewerDate", "");
+		//defaults.put("punishCount", 0);
+		//defaults.put("sincePunish", sincePunish);
+		//defaults.put("sinceWp", System.currentTimeMillis());
+		//defaults.put("maxviewerDate", "");
 
-		defaults.put("topic", "");
 		defaults.put("commands", new JSONArray());
 
 		defaults.put("repeatedCommands", new JSONArray());
@@ -1830,35 +1713,22 @@ public class Channel {
 		defaults.put("regulars", new JSONArray());
 		defaults.put("moderators", new JSONArray());
 		defaults.put("owners", new JSONArray());
-		defaults.put("useTopic", new Boolean(true));
-		defaults.put("useFilters", new Boolean(false));
-		defaults.put("enableThrow", new Boolean(true));
 		defaults.put("permittedDomains", new JSONArray());
 		defaults.put("signKicks", new Boolean(false));
-		defaults.put("topicTime", 0);
+		//defaults.put("topicTime", 0);
 		defaults.put("mode", 2);
 		defaults.put("announceJoinParts", new Boolean(false));
 		defaults.put("logChat", new Boolean(false));
-		defaults.put("filterMaxLength", 500);
-		defaults.put("offensiveWords", new JSONArray());
-		defaults.put("filterColors", new Boolean(false));
-		defaults.put("filterMe", new Boolean(false));
+		//defaults.put("offensiveWords", new JSONArray());
 		defaults.put("staticChannel", new Boolean(false));
-		defaults.put("enableWarnings", new Boolean(true));
-		defaults.put("timeoutDuration", 600);
-		defaults.put("clickToTweetFormat",
-				"Checkout (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
-		defaults.put("filterSymbolsPercent", 50);
-		defaults.put("filterSymbolsMin", 5);
 		defaults.put("commandPrefix", "!");
 
 		defaults.put("emoteSet", "");
-		defaults.put("subscriberRegulars", new Boolean(false));
-		defaults.put("filterEmotesSingle", new Boolean(false));
-		defaults.put("banPhraseSeverity", 99);
+		//defaults.put("subscriberRegulars", new Boolean(false));
+		//defaults.put("banPhraseSeverity", 99);
 
-		defaults.put("wpTimer", new Boolean(false));
-		defaults.put("wpCount", 0);
+		//defaults.put("wpTimer", new Boolean(false));
+		//defaults.put("wpCount", 0);
 		defaults.put("bullet", BotManager.getInstance().defaultBullet);
 		defaults.put("currencyName", BotManager.getInstance().defaultCurrency);
 		defaults.put("cooldown", 5);
@@ -1870,12 +1740,6 @@ public class Channel {
 		defaults.put("maxViewersStream", 0);
 
 		defaults.put("updateDelay", 120);
-		defaults.put("quotes", new JSONArray());
-
-		defaults.put("raidWhitelist", new JSONArray());
-		
-		// User Balance JSONArray
-		//defaults.put("userBalances", new JSONArray());
 
 		Iterator it = defaults.entrySet().iterator();
 		while (it.hasNext()) {
@@ -1915,115 +1779,50 @@ public class Channel {
 
 		setDefaults();
 
-		urbanEnabled = Boolean.valueOf((Boolean) config.get("urbanEnabled"));
+		//urbanEnabled = Boolean.valueOf((Boolean) config.get("urbanEnabled"));
 		currencyEnabled = Boolean.valueOf((Boolean) config.get("currencyEnabled"));
 		// channel = config.getString("channel");
 
-		subsRegsMinusLinks = Boolean.valueOf((Boolean) config
-				.get("subsRegsMinusLinks"));
-		updateDelay = ((Long) config.get("updateDelay")).intValue();
-		punishCount = ((Long) config.get("punishCount")).intValue();
-		streamAlive = (Boolean) config.get("streamAlive");
-		sinceWp = ((Long) config.get("sinceWp"));
-		maxviewerDate = (String) config.get("maxviewerDate");
+		//subsRegsMinusLinks = Boolean.valueOf((Boolean) config
+		//		.get("subsRegsMinusLinks"));
+		//updateDelay = ((Long) config.get("updateDelay")).intValue();
+		//punishCount = ((Long) config.get("punishCount")).intValue();
+		//streamAlive = (Boolean) config.get("streamAlive");
+		//sinceWp = ((Long) config.get("sinceWp"));
+		//maxviewerDate = (String) config.get("maxviewerDate");
 		runningMaxViewers = ((Long) config.get("runningMaxViewers")).intValue();
-		streamNumber = ((Long) config.get("streamCount")).intValue();
+		//streamNumber = ((Long) config.get("streamCount")).intValue();
 		streamMax = ((Long) config.get("maxViewersStream")).intValue();
 		maxViewers = ((Long) config.get("maxViewers")).intValue();
-		filterCaps = Boolean.valueOf((Boolean) config.get("filterCaps"));
 
-		filterCapsPercent = ((Long) config.get("filterCapsPercent")).intValue();
-		filterCapsMinCharacters = ((Long) config.get("filterCapsMinCharacters"))
-				.intValue();
-		filterCapsMinCapitals = ((Long) config.get("filterCapsMinCapitals"))
-				.intValue();
-		filterLinks = Boolean.valueOf((Boolean) config.get("filterLinks"));
-		filterOffensive = Boolean.valueOf((Boolean) config
-				.get("filterOffensive"));
-		filterEmotes = Boolean.valueOf((Boolean) config.get("filterEmotes"));
-
-		wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
-		wpCount = ((Long) config.get("wpCount")).intValue();
+		//wpOn = Boolean.valueOf((Boolean) config.get("wpTimer"));
+		//wpCount = ((Long) config.get("wpCount")).intValue();
 		bullet = (String) config.get("bullet");
 		currency = (String) config.get("curency");
 		cooldown = ((Long) config.get("cooldown")).intValue();
-		sincePunish = (Long) config.get("sincePunish");
-
-		filterSymbols = Boolean.valueOf((Boolean) config.get("filterSymbols"));
-		filterSymbolsPercent = ((Long) config.get("filterSymbolsPercent"))
-				.intValue();
-		filterSymbolsMin = ((Long) config.get("filterSymbolsMin")).intValue();
-		filterEmotesMax = ((Long) config.get("filterEmotesMax")).intValue();
-		filterEmotesSingle = Boolean.valueOf((Boolean) config
-				.get("filterEmotesSingle"));
+		//sincePunish = (Long) config.get("sincePunish");
 		// announceJoinParts =
 		// Boolean.parseBoolean(config.getString("announceJoinParts"));
-		announceJoinParts = false;
-		topic = (String) config.get("topic");
-		topicTime = ((Long) config.get("topicTime")).intValue();
-		useTopic = Boolean.valueOf((Boolean) config.get("useTopic"));
-		useFilters = Boolean.valueOf((Boolean) config.get("useFilters"));
-		enableThrow = Boolean.valueOf((Boolean) config.get("enableThrow"));
-		signKicks = Boolean.valueOf((Boolean) config.get("signKicks"));
+		//announceJoinParts = false;
+		//signKicks = Boolean.valueOf((Boolean) config.get("signKicks"));
 		logChat = Boolean.valueOf((Boolean) config.get("logChat"));
 		mode = ((Long) config.get("mode")).intValue();
-		filterMaxLength = ((Long) config.get("filterMaxLength")).intValue();
-		filterColors = Boolean.valueOf((Boolean) config.get("filterColors"));
-		filterMe = Boolean.valueOf((Boolean) config.get("filterMe"));
+		//filterColors = Boolean.valueOf((Boolean) config.get("filterColors"));
+		//filterMe = Boolean.valueOf((Boolean) config.get("filterMe"));
 		staticChannel = Boolean.valueOf((Boolean) config.get("staticChannel"));
-		clickToTweetFormat = (String) config.get("clickToTweetFormat");
-
-		enableWarnings = Boolean
-				.valueOf((Boolean) config.get("enableWarnings"));
 		timeoutDuration = ((Long) config.get("timeoutDuration")).intValue();
 		prefix = (String) config.get("commandPrefix");
 		currency = (String) config.get("currencyName") ;
 		emoteSet = (String) config.get("emoteSet");
-		subscriberRegulars = Boolean.valueOf((Boolean) config
-				.get("subscriberRegulars"));
+		//subscriberRegulars = Boolean.valueOf((Boolean) config
+		//		.get("subscriberRegulars"));
 
 		// timeAliveStart = (Long)config.get("timeAliveStart");
 
-		JSONArray jsonignoredUsers = (JSONArray) config.get("ignoredUsers");
-		for (int i = 0; i < jsonignoredUsers.size(); i++) {
-			ignoredUsers.add((String) jsonignoredUsers.get(i));
-		}
-
-		JSONArray quotesArray = (JSONArray) config.get("quotes");
-
-		for (int i = 0; i < quotesArray.size(); i++) {
-			try {
-				JSONObject quoteObj = (JSONObject) quotesArray.get(i);
-				String quote = (String) quoteObj.get("quote");
-				if (!quote.equals("")) {
-					quotes.add(quote);
-					if (quoteObj.containsKey("editor")
-							&& quoteObj.get("editor") != null) {
-						quoteAdders.put(quote, (String) quoteObj.get("editor"));
-					} else
-						quoteAdders.put(quote, null);
-					if (quoteObj.containsKey("timestamp")
-							&& quoteObj.get("timestamp") != null)
-						quoteTimestamps.put(quote,
-								Long.valueOf((Long) quoteObj.get("timestamp")));
-					else
-						quoteTimestamps.put(quote, null);
-				}
-			} catch (Exception e) {
-
-				quotes.add((String) quotesArray.get(i));
-			}
-			saveQuotes(false);
-
-		}
-
-		JSONArray raidWhitelistArray = (JSONArray) config.get("raidWhitelist");
-
-		for (int i = 0; i < raidWhitelistArray.size(); i++) {
-			if (!raidWhitelistArray.get(i).equals("")) {
-				raidWhitelist.add((String) raidWhitelistArray.get(i));
-			}
-		}
+		//JSONArray jsonignoredUsers = (JSONArray) config.get("ignoredUsers");
+		//for (int i = 0; i < jsonignoredUsers.size(); i++) {
+		//	ignoredUsers.add((String) jsonignoredUsers.get(i));
+		//}
 		
 		JSONArray commandsArray = (JSONArray) config.get("commands");
 
@@ -2142,31 +1941,31 @@ public class Channel {
 			}
 		}
 
-		JSONArray offensiveArray = (JSONArray) config.get("offensiveWords");
+		//JSONArray offensiveArray = (JSONArray) config.get("offensiveWords");
 
-		synchronized (offensiveWords) {
-			synchronized (offensiveWordsRegex) {
-				for (int i = 0; i < offensiveArray.size(); i++) {
+		//synchronized (offensiveWords) {
+		//	synchronized (offensiveWordsRegex) {
+		//		for (int i = 0; i < offensiveArray.size(); i++) {
 
-					String w = (String) offensiveArray.get(i);
-					offensiveWords.add(w);
-					if (w.startsWith("REGEX:")) {
-						String line = w.substring(6);
-						System.out.println("Adding: " + line);
-						Pattern tempP = Pattern.compile(line);
-						offensiveWordsRegex.add(tempP);
-					} else {
-						String line = "(?i).*" + Pattern.quote(w) + ".*";
-						System.out.println("Adding: " + line);
-						Pattern tempP = Pattern.compile(line);
-						offensiveWordsRegex.add(tempP);
-					}
+		//			String w = (String) offensiveArray.get(i);
+		//			offensiveWords.add(w);
+		//			if (w.startsWith("REGEX:")) {
+		//				String line = w.substring(6);
+		//				System.out.println("Adding: " + line);
+		//				Pattern tempP = Pattern.compile(line);
+		//				offensiveWordsRegex.add(tempP);
+		//			} else {
+		//				String line = "(?i).*" + Pattern.quote(w) + ".*";
+		//				System.out.println("Adding: " + line);
+		//				Pattern tempP = Pattern.compile(line);
+		//				offensiveWordsRegex.add(tempP);
+		//			}
 
-				}
-			}
+		//		}
+		//	}
 			
 
-		}
+		//}
 		
 			/*
 		JSONArray balanceArray = (JSONArray) config.get("userBalances");
