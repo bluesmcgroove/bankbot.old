@@ -6,7 +6,7 @@ target/maven-status/
 target/maven-archiver/
 target/
 globalbannedwords.cfg
-target/*.class
+target/classes/
 
 #################
 ## Eclipse

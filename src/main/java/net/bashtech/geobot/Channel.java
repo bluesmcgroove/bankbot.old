@@ -154,6 +154,7 @@ public class Channel {
 		
 		try {
 			Object balobj = parser.parse(new FileReader(twitchname + "balances.json"));
+			
 			balconfig = (JSONObject) balobj;
 			System.out.println(balobj.toString());
 
@@ -163,29 +164,16 @@ public class Channel {
 			System.out.println("Generating new balance config for " + channel);
 			balconfig = new JSONObject();
 		}
-		
+		 
 		
 		
 		loadProperties(name);
 		loadBalances(balname);
-		//System.out.println(balconfig.toJSONString());
 
 		if ((!checkPermittedDomain("coebot.tv"))) {
 			this.addPermittedDomain("coebot.tv");
 		}
-		/*
-		try {
-			  Thread.sleep(500);	  
-			}
-			catch (Exception e) {}	   
-			
-		*/
-		//System.out.println("Load key 'bluesmcgroove' from balconfig");
-		//Object key = "bluesmcgroove";
-		//System.out.println("balconfig for " + key + " " + balconfig.get(key));
 		
-		warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
-		warningTime = new HashMap<String, Long>();
 		commandCooldown = new HashMap<String, Long>();
 
 	}
@@ -224,14 +212,6 @@ public class Channel {
 		config.put("currencyName", this.currency);
 		saveConfig(true);
 	}
-
-	 public void setLastStrawpoll(int newId) {
-	 lastStrawpoll = newId;
-	 }
-	
-	 public int getLastStrawpoll() {
-	 return lastStrawpoll;
-	 }
 
 	public boolean getWp() {
 		return wpOn;
@@ -340,7 +320,8 @@ public class Channel {
 		saveConfig(true);
 	}
 
-	// ##############################################################
+	// ################################################################
+	
 	public int addQuote(String quote, String editor) {
 
 		if (quotes.contains(quote)) {
@@ -421,7 +402,8 @@ public class Channel {
 		else
 			return -1;
 	}
-
+	
+	
 	// ################################################################
 	public String getCommand(String key) {
 		key = key.toLowerCase();
@@ -646,15 +628,17 @@ public class Channel {
 		key = key.toLowerCase();
 
 		if (userBalances.containsKey(key)) {
-			return userBalances.get(key);
+					userBalances.get(key);
 		} else {
-			return null;
+					userBalances.put(key, defaultBalance);
+					saveBalance(true);
+			
 		}
+		return null;
 	}
 	
 	
 	public void setBalance(String key, Long balance) {
-		
 		
 		key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		balance = balance.longValue();
@@ -685,8 +669,6 @@ public class Channel {
 		return false;
 	}
 
-
-	// Save balance reference?
 	
 	void saveBalance(boolean shouldUpdate) {
 		JSONArray balanceArr = new JSONArray();
@@ -700,8 +682,7 @@ public class Channel {
 			
 			balanceArr.add(balanceObj);
 			balconfig.put("userBalances", balanceArr);
-			saveConfig(shouldUpdate);
-			System.out.println("Saving from saveBalance() " + userBalances.toString());
+			saveCurrency(shouldUpdate);
 		}
 		
 		
@@ -716,22 +697,46 @@ public class Channel {
 			long summedBalance = Math.addExact(currentBalance, incBal);
 			userBalances.put(key, summedBalance);
 			saveBalance(true);
+		} else {
+			long summedBalance = Math.addExact(defaultBalance, incBal);
+			userBalances.put(key, summedBalance);
 		}
 		saveBalance(false);
 
 	}
 	
 	//decrease balance
-	public void decreaseBalance(String key, Long decBal) {
+	public long decreaseBalance(String key, Long decBal) {
 		key = key.toLowerCase();
+		long subtrBalance;
 		if (userBalances.containsKey(key)) {
 			long currentBalance = userBalances.get(key);
-			long subtrBalance = Math.subtractExact(currentBalance, decBal);
-			userBalances.put(key, subtrBalance);
-			saveBalance(true);
+			if (currentBalance >= decBal) {
+				subtrBalance = Math.subtractExact(currentBalance, decBal);
+				userBalances.put(key, subtrBalance);
+				saveBalance(true);
+				return decBal;
+			}
+			else {
+				subtrBalance = userBalances.get(key);
+				userBalances.put(key, (long) 0);
+				saveBalance(true);
+				return subtrBalance;
+			}
+		} else {
+			if (defaultBalance >= decBal) {
+				subtrBalance = Math.subtractExact(defaultBalance, decBal);
+				userBalances.put(key, subtrBalance);
+				saveBalance(true);
+				return decBal;
+			} else {
+				subtrBalance = userBalances.get(key);
+				userBalances.put(key, (long) 0);
+				saveBalance(true);
+				return subtrBalance;
+			}
 		}
-		saveBalance(false);
-
+ 
 	}
 	
 	public void setScheduledCommand(String key, String pattern, int diff) {
@@ -881,227 +886,7 @@ public class Channel {
 		config.put("autoReplies", autoReplies);
 		saveConfig(true);
 	}
-
-
-	// #####################################################
-
-	public String getTopic() {
-		return topic;
-	}
-
-	public void setTopic(String s) {
-		topic = s;
-		config.put("topic", topic);
-		topicTime = (int) (System.currentTimeMillis() / 1000);
-		config.put("topicTime", topicTime);
-		saveConfig(false);
-	}
-
-	public String getTopicTime() {
-		int difference = (int) (System.currentTimeMillis() / 1000) - topicTime;
-		String returnString = "";
-
-		if (difference >= 86400) {
-			int days = (int) (difference / 86400);
-			returnString += days + "d ";
-			difference -= days * 86400;
-		}
-		if (difference >= 3600) {
-			int hours = (int) (difference / 3600);
-			returnString += hours + "h ";
-			difference -= hours * 3600;
-		}
-
-		int seconds = (int) (difference / 60);
-		returnString += seconds + "m";
-		difference -= seconds * 60;
-
-		return returnString;
-	}
-
-	// #####################################################
-
-	public int getFilterSymbolsMin() {
-		return filterSymbolsMin;
-	}
-
-	public int getFilterSymbolsPercent() {
-		return filterSymbolsPercent;
-	}
-
-	public void setFilterSymbolsMin(int symbols) {
-		filterSymbolsMin = symbols;
-		config.put("filterSymbolsMin", filterSymbolsMin);
-		saveConfig(true);
-	}
-
-	public void setFilterSymbolsPercent(int symbols) {
-		filterSymbolsPercent = symbols;
-		config.put("filterSymbolsPercent", filterSymbolsPercent);
-		saveConfig(true);
-	}
-
-	public boolean getFilterCaps() {
-		return filterCaps;
-	}
-
-	public int getfilterCapsPercent() {
-		return filterCapsPercent;
-	}
-
-	public int getfilterCapsMinCharacters() {
-		return filterCapsMinCharacters;
-	}
-
-	public int getfilterCapsMinCapitals() {
-		return filterCapsMinCapitals;
-	}
-
-	public void setFilterCaps(boolean caps) {
-		filterCaps = caps;
-		config.put("filterCaps", filterCaps);
-		saveConfig(true);
-	}
-
-	public void setfilterCapsPercent(int caps) {
-		filterCapsPercent = caps;
-		config.put("filterCapsPercent", filterCapsPercent);
-		saveConfig(true);
-	}
-
-	public void setfilterCapsMinCharacters(int caps) {
-		filterCapsMinCharacters = caps;
-		config.put("filterCapsMinCharacters", filterCapsMinCharacters);
-		saveConfig(true);
-	}
-
-	public void setfilterCapsMinCapitals(int caps) {
-		filterCapsMinCapitals = caps;
-		config.put("filterCapsMinCapitals", filterCapsMinCapitals);
-		saveConfig(true);
-	}
-
-	public void setFilterLinks(boolean links) {
-		filterLinks = links;
-		config.put("filterLinks", links);
-		saveConfig(true);
-	}
-
-	public boolean getFilterLinks() {
-		return filterLinks;
-	}
-
-	public void setFilterOffensive(boolean option) {
-		filterOffensive = option;
-		config.put("filterOffensive", option);
-		saveConfig(true);
-	}
-
-	public boolean getFilterOffensive() {
-		return filterOffensive;
-	}
-
-	public void setFilterEmotes(boolean option) {
-		filterEmotes = option;
-		config.put("filterEmotes", option);
-		saveConfig(true);
-	}
-
-	public boolean getFilterEmotes() {
-		return filterEmotes;
-	}
-
-	public void setFilterSymbols(boolean option) {
-		filterSymbols = option;
-		config.put("filterSymbols", option);
-		saveConfig(true);
-	}
-
-	public boolean getFilterSymbols() {
-		return filterSymbols;
-	}
-
-	public int getFilterMax() {
-		return filterMaxLength;
-	}
-
-	public void setFilterMax(int option) {
-		filterMaxLength = option;
-		config.put("filterMaxLength", option);
-		saveConfig(true);
-	}
-
-	public void setFilterEmotesMax(int option) {
-		filterEmotesMax = option;
-		config.put("filterEmotesMax", option);
-		saveConfig(true);
-	}
-
-	public int getFilterEmotesMax() {
-		return filterEmotesMax;
-	}
-
-	public boolean getFilterEmotesSingle() {
-		return filterEmotesSingle;
-	}
-
-	public void setFilterEmotesSingle(boolean filterEmotesSingle) {
-		this.filterEmotesSingle = filterEmotesSingle;
-
-		config.put("filterEmotesSingle", filterEmotesSingle);
-		saveConfig(true);
-	}
-
-	public void setAnnounceJoinParts(boolean bol) {
-		announceJoinParts = bol;
-		config.put("announceJoinParts", bol);
-		saveConfig(true);
-	}
-
-	public boolean getAnnounceJoinParts() {
-		return announceJoinParts;
-	}
-
-	public void setFilterColor(boolean option) {
-		filterColors = option;
-		config.put("filterColors", option);
-		saveConfig(true);
-	}
-
-	public boolean getFilterColor() {
-		return filterColors;
-	}
-
-	public void setFilterMe(boolean option) {
-		filterMe = option;
-		config.put("filterMe", option);
-		saveConfig(true);
-	}
-
-	public boolean getFilterMe() {
-		return filterMe;
-	}
-
-	public void setEnableWarnings(boolean option) {
-		enableWarnings = option;
-		config.put("enableWarnings", option);
-		saveConfig(true);
-	}
-
-	public boolean getEnableWarnings() {
-		return enableWarnings;
-	}
-
-	public void setTimeoutDuration(int option) {
-		timeoutDuration = option;
-		config.put("timeoutDuration", option);
-		saveConfig(true);
-	}
-
-	public int getTimeoutDuration() {
-		return timeoutDuration;
-	}
-
+	
 	// ###################################################
 
 	public boolean isRegular(String name) {
@@ -1180,36 +965,7 @@ public class Channel {
 
 		return false;
 	}
-
-	// ###################################################
-	public void addRaidWhitelist(String name) {
-		raidWhitelist.add(name.toLowerCase());
-		JSONArray raidWhitelistArray = new JSONArray();
-		for (String s : raidWhitelist) {
-			raidWhitelistArray.add(s);
-		}
-		config.put("raidWhitelist", raidWhitelistArray);
-		saveConfig(true);
-	}
-
-	public void deleteRaidWhitelist(String name) {
-		raidWhitelist.remove(name);
-		JSONArray raidWhitelistArray = new JSONArray();
-		for (String s : raidWhitelist) {
-			raidWhitelistArray.add(s);
-		}
-		config.put("raidWhitelist", raidWhitelistArray);
-		saveConfig(true);
-	}
-
-	public ArrayList<String> getRaidWhitelist() {
-		ArrayList<String> list = new ArrayList<String>();
-		for (String s : raidWhitelist) {
-			list.add(s);
-		}
-		java.util.Collections.sort(list);
-		return list;
-	}
+	
 	// ##################################################
 
 	public boolean isModerator(String name) {
@@ -1477,42 +1233,7 @@ public class Channel {
 	public Set<String> getOffensive() {
 		return offensiveWords;
 	}
-
-	// ##################################################
-
-	public void setTopicFeature(boolean setting) {
-		this.useTopic = setting;
-		config.put("useTopic", this.useTopic);
-		saveConfig(true);
-
-	}
-
-	public void setFiltersFeature(boolean setting) {
-		this.useFilters = setting;
-		config.put("useFilters", this.useFilters);
-		saveConfig(true);
-	}
-
-	public boolean checkSignKicks() {
-		return signKicks;
-	}
-
-	public void setSignKicks(boolean setting) {
-		this.signKicks = setting;
-		config.put("signKicks", this.signKicks);
-		saveConfig(true);
-	}
-
-	public void setLogging(boolean option) {
-		logChat = option;
-		config.put("logChat", option);
-		saveConfig(false);
-	}
-
-	public boolean getLogging() {
-		return logChat;
-	}
-
+	
 	// ##################################################
 
 	public boolean checkPermittedDomain(String message) {
@@ -1596,65 +1317,6 @@ public class Channel {
 
 	public double getAverage() {
 		return (double) runningMaxViewers / (streamNumber);
-	}
-
-	// #################################################
-
-	public String getClickToTweetFormat() {
-		return clickToTweetFormat;
-	}
-
-	public void setClickToTweetFormat(String string) {
-		clickToTweetFormat = string;
-		config.put("clickToTweetFormat", clickToTweetFormat);
-		saveConfig(true);
-	}
-
-	public int getWarningCount(String name, FilterType type) {
-		if (warningCount.containsKey(name.toLowerCase())
-				&& warningCount.get(name.toLowerCase()).containsKey(type))
-			return warningCount.get(name.toLowerCase()).get(type);
-		else
-			return 0;
-	}
-
-	public void incWarningCount(String name, FilterType type) {
-		clearWarnings();
-		synchronized (warningCount) {
-			if (warningCount.containsKey(name.toLowerCase())) {
-				if (warningCount.get(name.toLowerCase()).containsKey(type)) {
-					warningCount.get(name.toLowerCase()).put(type,
-							warningCount.get(name.toLowerCase()).get(type) + 1);
-					warningTime.put(name.toLowerCase(), getTime());
-				} else {
-					warningCount.get(name.toLowerCase()).put(type, 1);
-					warningTime.put(name.toLowerCase(), getTime());
-				}
-			} else {
-				warningCount.put(name.toLowerCase(),
-						new EnumMap<FilterType, Integer>(FilterType.class));
-				warningCount.get(name.toLowerCase()).put(type, 1);
-				warningTime.put(name.toLowerCase(), getTime());
-			}
-		}
-	}
-
-	public void clearWarnings() {
-		List<String> toRemove = new ArrayList<String>();
-		synchronized (warningTime) {
-			synchronized (warningCount) {
-				long time = getTime();
-				for (Map.Entry<String, Long> entry : warningTime.entrySet()) {
-					if ((time - entry.getValue()) > 3600) {
-						toRemove.add((String) entry.getKey());
-					}
-				}
-				for (String name : toRemove) {
-					warningCount.remove(name);
-					warningTime.remove(name);
-				}
-			}
-		}
 	}
 
 	public void registerCommandUsage(String command) {
@@ -2068,16 +1730,6 @@ public class Channel {
 
 		}
 		
-			/*
-		JSONArray balanceArray = (JSONArray) config.get("userBalances");
-
-		for (int i = 0; i < balanceArray.size(); i++) {
-			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			userBalances.put((String) balanceObject.get("key"),
-					(Long) balanceObject.get("balance"));
-		}
-		*/
-		
 		System.out.println(userBalances.toString());
 		
 		saveConfig(true);
@@ -2085,23 +1737,20 @@ public class Channel {
 	}
 	
 	private void loadBalances(String name){
+		setBalanceDefaults();
 		
-		System.out.println("Balances loaded from " + name);
 		JSONArray balanceArray = (JSONArray) balconfig.get("userBalances");
-		
-		System.out.println("Printing balconfig " + balconfig.toJSONString());
 
-		for (int i = 0; i < userBalances.size(); i++) {
-			JSONObject balanceObject = (JSONObject) balanceArray.get(i);
-			userBalances.put((String) balanceObject.get("key"),
-					(Long) balanceObject.get("balance"));
+				for (int i = 0; i < balanceArray.size(); i++) {
+					JSONObject balanceObject = (JSONObject) balanceArray.get(i);
+					userBalances.put((String) balanceObject.get("key"),
+							(Long) balanceObject.get("balance"));
+
 					
-					//saveCurrency(false);
 					saveBalance(false);
-			
+					
 		}
 		saveCurrency(true);
-		//saveBalance(true);
 		System.out.println("Printing userBalances " + userBalances.toString());
 	}
 	
@@ -2109,18 +1758,7 @@ public class Channel {
 	public void setMode(int mode) {
 		this.mode = mode;
 		config.put("mode", this.mode);
-
-		if (mode == -1) {
-			this.setFiltersFeature(true);
-			this.setFilterEmotes(false);
-			this.setFilterEmotesMax(5);
-			this.setFilterSymbols(true);
-			this.setFilterCaps(false);
-			this.setFilterLinks(false);
-			this.setFilterOffensive(true);
-			this.setSignKicks(false);
-			this.setTopicFeature(false);
-		}
+		
 		saveConfig(true);
 	}
 
